@@ -18,16 +18,7 @@ export default class NavBar extends React.Component {
   }
 
   render() {
-    if (this.props.mode === "dash") {
-      return (
-        <NavBarPrimitive>
-          <NameWrapper>
-            <Name onClick={() => this.props.history.push("/")}>On Sets</Name>
-          </NameWrapper>
-          {this.renderMenu()}
-        </NavBarPrimitive>
-      );
-    } else if (this.props.mode === "game" || this.props.mode === "online-game") {
+    if (this.props.mode === "game" || this.props.mode === "online-game") {
       return (
         <NavBarPrimitive>
           {this.props.mode === "online-game" ? this.renderQue() : null}
@@ -41,7 +32,7 @@ export default class NavBar extends React.Component {
       return (
         <NavBarPrimitive>
           <NameWrapper>
-            <Name>On Sets</Name>
+            <Name onClick={() => (window.location.href = window.location.origin)}>On Sets</Name>
           </NameWrapper>
         </NavBarPrimitive>
       );

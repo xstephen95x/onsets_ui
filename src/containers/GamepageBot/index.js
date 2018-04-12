@@ -106,7 +106,12 @@ export default class GamepageBot extends React.Component {
     } else if (this.state.auth === null) {
       return <Loading />;
     } else {
-      return <LogIn />;
+      return (
+        <div>
+          <NavBar mode="home" />
+          <LogIn />
+        </div>
+      );
     }
   }
 
