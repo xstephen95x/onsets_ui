@@ -75,14 +75,14 @@ export default class GamepageBot extends React.Component {
       .database()
       .ref(`bots/${botId}`)
       .once("value", snapshot => {
+        if (process.env.NODE_ENV === "test") {
+          this.setState({ auth: true });
+        } else {
+          this.attachAuthListener();
+        }
         if (snapshot.exists()) {
           this.setState({ botId });
           this.attachGameListener();
-          if (process.env.NODE_ENV === "test") {
-            this.setState({ auth: true });
-          } else {
-            this.attachAuthListener();
-          }
         } else {
           let isValidBotId = v4.test(botId);
           if (isValidBotId) {
@@ -296,6 +296,7 @@ export default class GamepageBot extends React.Component {
       .ref(path)
       .set({ stage: "new" })
       .then(() => {
+        this.attachGameListener();
         this.setUpGame().then(() => {
           this.updateGame("stage", "universe");
         });
@@ -455,35 +456,27 @@ export default class GamepageBot extends React.Component {
 
     // if b == 1 => bot is player 2
     let bot_first = b ? false : true;
-
-    return new Promise((resolve, reject) => {
-      firebase
-        .database()
-        .ref(`bots/${this.props.match.params.botId}`)
-        .transaction(
-          data => {
-            let blankGame = {
-              turn: 0,
-              stall: {
-                began: 0
-              },
-              players: gamePlayers,
-              bot_first: bot_first,
-              uuid: this.props.match.params.botId,
-              playerCount: 2,
-              movingCube: 0,
-              stage: "universe",
-              cards: [],
-              universe: 0,
-              cubes: rollCubes()
-            };
-            return blankGame;
+    return firebase
+      .database()
+      .ref(`bots/${this.props.match.params.botId}`)
+      .transaction(data => {
+        let blankGame = {
+          turn: 0,
+          stall: {
+            began: 0
           },
-          () => {
-            resolve(true);
-          }
-        );
-    });
+          players: gamePlayers,
+          bot_first: bot_first,
+          uuid: this.props.match.params.botId,
+          playerCount: 2,
+          movingCube: 0,
+          stage: "universe",
+          cards: [],
+          universe: 0,
+          cubes: rollCubes()
+        };
+        return blankGame;
+      });
   };
 
   endTurn = () => {

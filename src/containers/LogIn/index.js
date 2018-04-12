@@ -24,7 +24,6 @@ export default class LogIn extends React.Component {
           <EmailForm alert={this.state.alert} />
           <NavBar mode="home" />
           <SocialLoginArea>
-            <div>Or sign in with Google / Github</div>
             <AuthButton className="google" onClick={this.handleGoogleAuth}>
               <img src={G} style={{ width: "40px" }} />
             </AuthButton>

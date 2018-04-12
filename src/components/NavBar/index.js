@@ -32,7 +32,7 @@ export default class NavBar extends React.Component {
         <NavBarPrimitive>
           {this.props.mode === "online-game" ? this.renderQue() : null}
           <NameWrapper>
-            <Name onClick={() => this.props.history.push("/game")}>On Sets</Name>
+            <Name onClick={() => this.props.history.push("/")}>On Sets</Name>
           </NameWrapper>
           {this.renderMenu()}
         </NavBarPrimitive>
