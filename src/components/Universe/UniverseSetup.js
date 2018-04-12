@@ -4,10 +4,7 @@
  *
  */
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import Variations from "components/Variations";
-import Resources from "components/Cube/Resources";
 import { Colors } from "containers/App/global_styles";
 
 export default class Loading extends React.Component {
@@ -26,11 +23,7 @@ export default class Loading extends React.Component {
         <ChoiceWrapper>
           {["6", "7", "8", "9", "10", "11", "12", "13", "14"].map(num => {
             return (
-              <Choice
-                key={num}
-                tabIndex="0"
-                onClick={() => this.handleClick(num)}
-              >
+              <Choice key={num} tabIndex="0" onClick={() => this.handleClick(num)}>
                 {num}
               </Choice>
             );
@@ -45,13 +38,6 @@ export default class Loading extends React.Component {
   };
 }
 
-const ErrorPrimitive = styled.div`
-  margin-left: 10px;
-  display: inline-block;
-  font-size: 20px;
-  color: red;
-  text-align: center;
-`;
 const Title = styled.div`
   color: ${Colors.modalTxt};
   width: 100%;

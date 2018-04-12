@@ -6,8 +6,7 @@ import Pencil from "./pencil.svg";
 import { Colors } from "containers/App/global_styles";
 import Button from "muicss/lib/react/button";
 
-const replaceLastChar = (inp, char) =>
-  inp.slice(0, inp.length - 1).concat(char);
+const replaceLastChar = (inp, char) => inp.slice(0, inp.length - 1).concat(char);
 
 export default class ScratchPad extends React.Component {
   constructor(props) {
@@ -30,10 +29,7 @@ export default class ScratchPad extends React.Component {
     let fob = "";
     if (!this.state.isOpen) fob = "closed";
     return (
-      <ScratchPadPrimitive
-        tabIndex="0"
-        className={this.state.isOpen ? "open" : "closed"}
-      >
+      <ScratchPadPrimitive tabIndex="0" className={this.state.isOpen ? "open" : "closed"}>
         <Fob className={fob} onClick={this.toggleScratchPad}>
           <PencilPrimitive src={Pencil} />
         </Fob>
@@ -101,16 +97,14 @@ export default class ScratchPad extends React.Component {
                   fontWeight: "700",
                   letterSpacing: "2px"
                 }}
-                onClick={this.handleSubmit}
-              >
+                onClick={this.handleSubmit}>
                 Submit
               </Button>
             </ButtonWrapper>
           );
         }
       }
-      console.log("-----------------");
-      if (this.props.challenge.caller_uid == myUID) {
+      if (this.props.challenge.caller_uid === myUID) {
         if (this.props.challenge.now) {
           return (
             <ButtonWrapper>
@@ -121,8 +115,7 @@ export default class ScratchPad extends React.Component {
                   fontWeight: "700",
                   letterSpacing: "2px"
                 }}
-                onClick={this.handleSubmit}
-              >
+                onClick={this.handleSubmit}>
                 Submit
               </Button>
             </ButtonWrapper>
@@ -130,7 +123,7 @@ export default class ScratchPad extends React.Component {
         } else {
           return null;
         }
-      } else if (this.props.challenge.last_mover_uid == myUID) {
+      } else if (this.props.challenge.last_mover_uid === myUID) {
         if (this.props.challenge.now) {
           return null;
         } else {
@@ -143,14 +136,13 @@ export default class ScratchPad extends React.Component {
                   fontWeight: "700",
                   letterSpacing: "2px"
                 }}
-                onClick={this.handleSubmit}
-              >
+                onClick={this.handleSubmit}>
                 Submit
               </Button>
             </ButtonWrapper>
           );
         }
-      } else if (this.props.challenge.optional_solver_uid == myUID) {
+      } else if (this.props.challenge.optional_solver_uid === myUID) {
         return (
           <ButtonWrapper>
             <Button
@@ -160,8 +152,7 @@ export default class ScratchPad extends React.Component {
                 fontWeight: "700",
                 letterSpacing: "2px"
               }}
-              onClick={this.handleSubmit}
-            >
+              onClick={this.handleSubmit}>
               Submit
             </Button>
             <Button
@@ -171,8 +162,7 @@ export default class ScratchPad extends React.Component {
                 fontWeight: "700",
                 letterSpacing: "2px"
               }}
-              onClick={this.handleDecline}
-            >
+              onClick={this.handleDecline}>
               Decline
             </Button>
           </ButtonWrapper>

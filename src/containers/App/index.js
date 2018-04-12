@@ -3,7 +3,7 @@
  *
  * App acts as the root of the entire application. Routes should be
  * defined here, all at the top level.
-*/
+ */
 import React from "react";
 import PropTypes from "prop-types";
 import firebase from "firebase";
@@ -14,7 +14,6 @@ import GamepageBot from "containers/GamepageBot";
 import Home from "containers/Home";
 import LogIn from "containers/LogIn";
 import NotFound from "containers/NotFound";
-import Dash from "containers/Dash";
 import { DragDropContext } from "react-dnd";
 import HTML5Backend from "react-dnd-html5-backend";
 
@@ -42,7 +41,6 @@ class App extends React.Component {
             <Route exact path="/" component={Home} />
             <Route path="/play" component={Gamepage} />
             <Route path="/bot/:botId" component={GamepageBot} />
-            <Route exact path="/game" component={Dash} />
             <Route path="*" component={NotFound} />
           </Switch>
         </BrowserRouter>

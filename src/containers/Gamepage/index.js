@@ -2,9 +2,7 @@
  * Gamepage
  */
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import firebase from "firebase";
 
 import Board from "components/Board";
 import Universe from "components/Universe";
@@ -12,11 +10,9 @@ import Resources from "components/Cube/Resources";
 import NavBar from "components/NavBar";
 import ScratchPad from "components/ScratchPad";
 import Variations from "components/Variations";
-import Loading from "components/Loading";
 import UniverseSetup from "components/Universe/UniverseSetup";
 import GoalArea from "components/GoalArea";
 import SolutionView from "components/SolutionView";
-import LogIn from "containers/LogIn";
 import Button from "muicss/lib/react/button";
 import UniverseGrid from "components/Universe/UniverseGrid";
 import AlertBar from "components/AlertBar";
@@ -123,8 +119,7 @@ export default class Gamepage extends React.Component {
             }}
             color="primary"
             variant="raised"
-            onClick={this.challengeNow}
-          >
+            onClick={this.challengeNow}>
             Now
           </Button>
           <Button
@@ -136,8 +131,7 @@ export default class Gamepage extends React.Component {
             }}
             color="danger "
             variant="raised"
-            onClick={this.challengeNow}
-          >
+            onClick={this.challengeNow}>
             Never
           </Button>
         </div>
@@ -190,26 +184,18 @@ export default class Gamepage extends React.Component {
   renderVariations = () => {
     if (this.state.stage === "universe") {
       return <UniverseSetup setUniverse={this.setUniverse} />;
-    } else if (
-      ["goal", "ingame", "challenge", "reveal"].includes(this.state.stage)
-    ) {
+    } else if (["goal", "ingame", "challenge", "reveal"].includes(this.state.stage)) {
       return (
         <div>
           {Universe({ cards: this.state.cards })}
           <UniverseGrid cards={this.state.cards} />
-          <Variations
-            setVariation={this.setVariation}
-            variations={this.state.variations}
-          />
+          <Variations setVariation={this.setVariation} variations={this.state.variations} />
         </div>
       );
     } else if (this.state.stage === "variations") {
       return (
         <div>
-          <Variations
-            setVariation={this.setVariation}
-            variations={this.state.variations}
-          />
+          <Variations setVariation={this.setVariation} variations={this.state.variations} />
           {Universe({ cards: this.state.cards })}
           <UniverseGrid cards={this.state.cards} />
         </div>
@@ -334,7 +320,9 @@ const ResourcesWrapper = styled.div`
   height: 180px;
   margin-top: 70px;
 `;
-const GamePrimitive = styled.div`padding-bottom: 80px;`;
+const GamePrimitive = styled.div`
+  padding-bottom: 80px;
+`;
 const BoardPrimitive = styled.div`
   margin: 0 auto;
   display: flex;
@@ -342,28 +330,4 @@ const BoardPrimitive = styled.div`
   justify-content: flex-start;
   width: 800px;
   padding: 0 16px;
-`;
-const ChallengeNow = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 100px;
-  height: 50px;
-  border-radius: 20px;
-  background-color: blue;
-  color: white;
-  text-align: center;
-  font-size: 20px;
-`;
-const ChallengeNever = styled.div`
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  width: 100px;
-  height: 50px;
-  border-radius: 20px;
-  background-color: red;
-  color: white;
-  text-align: center;
-  font-size: 20px;
 `;

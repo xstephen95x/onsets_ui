@@ -13,7 +13,7 @@ const goal_solver = cubes => {
   }
   for (var i = 0; i < cubes.length; i++) {
     let cube = cubes[i];
-    if (cube != 0) {
+    if (cube !== 0) {
       let value = parseInt(cube.value);
       if (cube.inverted) value = value * -1;
       if (i < 3) {
@@ -22,9 +22,9 @@ const goal_solver = cubes => {
         } else {
           goal = goal * value;
         }
-      } else if (i == 3 || i == 4) {
+      } else if (i === 3 || i === 4) {
         goal = goal + value;
-      } else if (i == 5) {
+      } else if (i === 5) {
         goal = goal * value;
       }
     }

@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { Colors } from "containers/App/global_styles";
 import { DropTarget } from "react-dnd";
 import Cube from "components/Cube";
 
@@ -36,7 +35,7 @@ const Box = ({
   return connectDropTarget(
     <div>
       <BoxWrapper onTouchStart={handleTouch} className={className}>
-        {cube !== 0 &&
+        {cube !== 0 && (
           <Cube
             cube={cube}
             invert={invert}
@@ -46,7 +45,8 @@ const Box = ({
             movingCube={movingCube}
             setMovingCube={setMovingCube}
             setGoalCube={setGoalCube}
-          />}
+          />
+        )}
       </BoxWrapper>
     </div>
   );

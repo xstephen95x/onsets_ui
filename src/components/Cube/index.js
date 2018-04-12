@@ -74,7 +74,7 @@ class Cube extends React.Component {
     if (this.props.goalPosition) shouldBeVisible = true;
     const { isDragging, connectDragSource } = this.props;
 
-    if (this.props.cube == undefined) return null;
+    if (this.props.cube === undefined) return null;
     if (isDragging || !shouldBeVisible) {
       style.opacity = "0";
     }
@@ -105,8 +105,7 @@ class Cube extends React.Component {
               onBlur={() => {
                 this.props.setMovingCube(null);
               }}
-              className={className}
-            >
+              className={className}>
               {CubeInner({ cube: this.props.cube })}
             </CubePrimitive>
           </div>
@@ -129,11 +128,7 @@ class Cube extends React.Component {
     }
   }
   renderInvertButton = isSelected => {
-    if (
-      isSelected &&
-      this.props.goalPosition &&
-      this.props.cube.type === "numbers"
-    ) {
+    if (isSelected && this.props.goalPosition && this.props.cube.type === "numbers") {
       return (
         <Inverter
           onTouchStart={() => {

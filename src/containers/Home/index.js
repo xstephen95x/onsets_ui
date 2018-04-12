@@ -18,11 +18,10 @@ export default class Home extends React.Component {
       <div>
         <NavBar mode="home" />
         <HomeWrapper>
-          <Header>Welcome to On-Sets online!</Header>
-          <Header>This app is currently in development</Header>
-          <Header>
-            Visit <a href="http://agloa.org/on-sets/">Here</a> to learn more
-          </Header>
+          <Header>Welcome to On-Sets Online!</Header>
+          <H3>Play <a href="http://agloa.org/on-sets/">On Sets</a> in a 2-player match
+          against a bot. You can also use the static version of the game as an
+          On Sets game to play in person.</H3>
           <Button
             color="primary"
             variant="raised"
@@ -39,7 +38,7 @@ export default class Home extends React.Component {
               this.props.history.push("/play");
             }}
           >
-            Play Locally
+            Play Static
           </Button>
         </HomeWrapper>
       </div>
@@ -55,7 +54,13 @@ const Header = styled.h1`
   position: relative;
   width: 750px;
   margin: 0 auto;
+  margin-top: 20px;
 `;
+const H3 = styled.h3`
+  position: relative;
+  width: 750px;
+  margin: 50px auto;
+`
 const HomeWrapper = styled.div`
   font-size: 26px;
   width: 100%;

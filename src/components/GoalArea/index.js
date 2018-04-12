@@ -70,24 +70,15 @@ export default class GoalArea extends React.Component {
     if (!this.props.goal) {
       let className = "";
       if (!goal_solver(this.state.cubes)) className = "invalid";
-      if (
-        this.props.isOnline &&
-        this.props.goalsetterUID == firebase.auth().currentUser.uid
-      ) {
+      if (this.props.isOnline && this.props.goalsetterUID === firebase.auth().currentUser.uid) {
         return (
-          <Submit
-            className={className}
-            onClick={() => this.submitGoal(this.state.cubes)}
-          >
+          <Submit className={className} onClick={() => this.submitGoal(this.state.cubes)}>
             <Arrow />
           </Submit>
         );
       } else if (!this.props.isOnline) {
         return (
-          <Submit
-            className={className}
-            onClick={() => this.submitGoal(this.state.cubes)}
-          >
+          <Submit className={className} onClick={() => this.submitGoal(this.state.cubes)}>
             <Arrow />
           </Submit>
         );
@@ -104,15 +95,15 @@ export default class GoalArea extends React.Component {
    */
   setGoalCube = (to, from, cube, shouldCheck) => {
     let cubes = this.state.cubes;
-    if (to == from) {
+    if (to === from) {
       return false;
     }
-    if (cubes[to] != 0 && cube == 0) {
+    if (cubes[to] !== 0 && cube === 0) {
       cubes[from] = 0;
       this.setState({ cubes });
       return false;
     }
-    if (cubes[to] == 0) {
+    if (cubes[to] === 0) {
       if (shouldCheck) {
         for (var i = 0; i < cubes.length; i++) {
           if (cubes[i].index === cube.index) {
@@ -162,7 +153,7 @@ const Arrow = styled.div`
   top: 9px;
   z-index: 2;
   &::before {
-    content: '⇗';
+    content: "⇗";
   }
 `;
 export const Submit = styled.div`

@@ -96,7 +96,7 @@ const CubeContainer = styled.div`
 export const Wrapper = styled.div`
   width: 240px;
   height: 350px;
-  background-color: ${Colors.fgYel};
+  background-color: ${Colors.bgYel};
   display: inline-block;
   vertical-align: top;
   margin-right: 10px;

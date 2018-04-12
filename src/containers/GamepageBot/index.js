@@ -28,9 +28,7 @@ import { rollCubes, shuffleCards } from "shared/game_setup_service";
 import Invalid from "containers/NotFound/Invalid";
 import Button from "muicss/lib/react/button";
 
-const v4 = new RegExp(
-  /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
-);
+const v4 = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
 const PlayerCount = 2;
 
 export default class GamepageBot extends React.Component {
@@ -182,8 +180,7 @@ export default class GamepageBot extends React.Component {
             }}
             color="primary"
             variant="raised"
-            onClick={() => this.setChallenge("now")}
-          >
+            onClick={() => this.setChallenge("now")}>
             Now
           </Button>
           <Button
@@ -195,8 +192,7 @@ export default class GamepageBot extends React.Component {
             }}
             color="danger "
             variant="raised"
-            onClick={() => this.setChallenge("never")}
-          >
+            onClick={() => this.setChallenge("never")}>
             Never
           </Button>
         </ButtonsWrapper>
@@ -216,8 +212,7 @@ export default class GamepageBot extends React.Component {
           }}
           color="danger "
           variant="raised"
-          onClick={() => this.setChallenge("never")}
-        >
+          onClick={() => this.setChallenge("never")}>
           Never
         </Button>
       );
@@ -246,11 +241,7 @@ export default class GamepageBot extends React.Component {
     }
   };
   renderGoalArea = () => {
-    if (
-      ["goal", "ingame", "challenge", "archived"].includes(
-        this.state.game.stage
-      )
-    ) {
+    if (["goal", "ingame", "challenge", "archived"].includes(this.state.game.stage)) {
       return (
         <GoalArea
           markUsed={this.markUsed}
@@ -286,11 +277,7 @@ export default class GamepageBot extends React.Component {
       } else {
         return null;
       }
-    } else if (
-      ["goal", "ingame", "challenge", "archived"].includes(
-        this.state.game.stage
-      )
-    ) {
+    } else if (["goal", "ingame", "challenge", "archived"].includes(this.state.game.stage)) {
       return (
         <div>
           {Universe({ cards: this.state.game.cards })}
@@ -359,8 +346,8 @@ export default class GamepageBot extends React.Component {
 
     let callerIndex = this.state.game.turn % PlayerCount;
     let botIsLastMover =
-      (this.state.game.bot_first && callerIndex == 1) ||
-      (!this.state.game.bot_first && callerIndex == 0);
+      (this.state.game.bot_first && callerIndex === 1) ||
+      (!this.state.game.bot_first && callerIndex === 0);
     if (botIsLastMover) {
       this.updateGame("challenge", {
         began: new Date().getTime(),
@@ -375,7 +362,7 @@ export default class GamepageBot extends React.Component {
   };
 
   setGoal = (goal, value) => {
-    if (this.state.game.players[0].uid == firebase.auth().currentUser.uid) {
+    if (this.state.game.players[0].uid === firebase.auth().currentUser.uid) {
       this.updateGame("goal", goal).then(() => {
         this.updateGame("stage", "ingame");
         this.endTurn();

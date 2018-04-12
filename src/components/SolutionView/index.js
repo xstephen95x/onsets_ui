@@ -4,7 +4,6 @@
  * provides a place for disputing solutions
  */
 import React from "react";
-import PropTypes from "prop-types";
 import firebase from "firebase";
 import styled from "styled-components";
 import Button from "muicss/lib/react/button";
@@ -112,12 +111,7 @@ export default class SolutionView extends React.Component {
         if (solution.accepted) {
           isAccepted = solution.accepted.length === 2;
         }
-        if (
-          solution.declined ||
-          solution.conceded ||
-          solution.over_ruled ||
-          isAccepted
-        ) {
+        if (solution.declined || solution.conceded || solution.over_ruled || isAccepted) {
           finishedCount++;
         }
       }
@@ -185,18 +179,10 @@ export default class SolutionView extends React.Component {
     }
     return (
       <ButtonWrapper>
-        <Button
-          size="small"
-          color="primary"
-          onClick={this.handleAccept.bind(this, solver_uid)}
-        >
+        <Button size="small" color="primary" onClick={this.handleAccept.bind(this, solver_uid)}>
           Accept
         </Button>
-        <Button
-          size="small"
-          color="danger"
-          onClick={this.handleReject.bind(this, solver_uid)}
-        >
+        <Button size="small" color="danger" onClick={this.handleReject.bind(this, solver_uid)}>
           Reject
         </Button>
       </ButtonWrapper>
@@ -234,8 +220,7 @@ export default class SolutionView extends React.Component {
                   size="small"
                   color="primary"
                   onClick={this.handleJudge}
-                  style={{ float: "right", margin: "0" }}
-                >
+                  style={{ float: "right", margin: "0" }}>
                   Judge
                 </Button>
                 <Button
@@ -243,8 +228,7 @@ export default class SolutionView extends React.Component {
                   size="small"
                   color="danger"
                   onClick={this.handleConcede}
-                  style={{ float: "right", margin: "0", marginRight: "5px" }}
-                >
+                  style={{ float: "right", margin: "0", marginRight: "5px" }}>
                   Concede
                 </Button>
               </div>
@@ -274,7 +258,7 @@ export default class SolutionView extends React.Component {
         }
         //XXX: check for other edge cases for forceout.
         //TODO: if correct -> 4, if wrong -> 2;
-      } else if (solverUID == this.state.solver1) {
+      } else if (solverUID === this.state.solver1) {
         // In either now/never, solver1 gets 6 if correct, 2 otherwise.
         if (solution.accepted && solution.accepted.length === 2) {
           isAccepted = true;
@@ -286,7 +270,7 @@ export default class SolutionView extends React.Component {
           scores[solverUID] = 6;
           scores[nonwriter] = 2;
         }
-      } else if (solverUID == this.state.solver2) {
+      } else if (solverUID === this.state.solver2) {
         if (solution.accepted && solution.accepted.length === 2) {
           isAccepted = true;
         }
@@ -307,7 +291,7 @@ export default class SolutionView extends React.Component {
           if (isAccepted || solution.over_ruled) {
             // 3rd party on challenge NEVER with correct solution
             scores[solverUID] = 6;
-          } else if (solution.declined && scores[this.state.solver1] == 2) {
+          } else if (solution.declined && scores[this.state.solver1] === 2) {
             scores[solverUID] = 4;
           } else {
             scores[solverUID] = 2;

@@ -17,6 +17,8 @@ export const shuffleCards = n => {
         case "y":
           card.y = true;
           break;
+        default:
+          return;
       }
     }
     cards.push(card);
@@ -120,9 +122,9 @@ const chooseColor = cube => {
   }
 };
 /**
-   * Randomize array element order in-place.
-   * Using Durstenfeld shuffle algorithm.
-   */
+ * Randomize array element order in-place.
+ * Using Durstenfeld shuffle algorithm.
+ */
 const shuffleArray = array => {
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
