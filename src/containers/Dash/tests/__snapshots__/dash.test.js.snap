@@ -1,0 +1,563 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The Dash shows the number of players in a game 1`] = `
+.c0 {
+  background-color: #7f0000;
+  box-shadow: 0px -2px 22px 10px rgba(0,0,0,0.75);
+  color: #f7ee7f;
+  height: 40px;
+  margin-bottom: 20px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 200;
+}
+
+.c1 {
+  position: absolute;
+  width: 100%;
+}
+
+.c2 {
+  color: #ffa726;
+  margin: 0 auto;
+  width: 150px;
+  height: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 30px;
+  -webkit-transition: all 400ms ease-in-out;
+  transition: all 400ms ease-in-out;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 black;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.c2:hover {
+  color: yellow;
+}
+
+.c3 {
+  position: absolute;
+  cursor: pointer;
+  top: 10px;
+  right: 20px;
+}
+
+.c4 {
+  -webkit-transition: all 100ms ease-in-out;
+  transition: all 100ms ease-in-out;
+}
+
+.c4:hover {
+  -webkit-transform: scale(1.1);
+  -ms-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.c5 {
+  opacity: 0;
+  cursor: pointer;
+  color: #e5e7e9;
+  border-radius: 10px;
+  position: absolute;
+  top: -130px;
+  width: 210px;
+  background: #2e4053;
+  z-index: 98;
+  right: -20px;
+  height: 100px;
+  -webkit-transition: all 100ms ease-in-out;
+  transition: all 100ms ease-in-out;
+  box-shadow: 0px 5px 30px -4px rgba(0,0,0,0.75);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: space-around;
+  -webkit-justify-content: space-around;
+  -ms-flex-pack: space-around;
+  justify-content: space-around;
+}
+
+.c5.open {
+  -webkit-transform: translate(0px,180px);
+  -ms-transform: translate(0px,180px);
+  transform: translate(0px,180px);
+  opacity: 1;
+}
+
+.c5:focus {
+  outline: none;
+}
+
+.c6 {
+  position: absolute;
+  top: -8px;
+  right: 35px;
+  width: 0;
+  height: 0;
+  border-bottom: 8px solid #2e4053;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+.c7 {
+  width: 90%;
+  text-align: center;
+  height: 15px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+.c8 {
+  border-radius: 20px;
+  box-shadow: 3px 5px 30px -4px rgba(0,0,0,0.75);
+  margin: 0 auto;
+  margin-top: 80px;
+  background-color: #f2f2f2;
+  padding: 5px;
+}
+
+.c9 {
+  width: 85%;
+  margin: 0 auto;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: space-between;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: space-between;
+  justify-content: space-between;
+}
+
+.c11 {
+  margin: 0 auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 1vh;
+  width: 98%;
+  height: 50px;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-box-pack: space-between;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: space-between;
+  justify-content: space-between;
+  -webkit-transition: all 200ms ease-in-out;
+  transition: all 200ms ease-in-out;
+}
+
+.c11:hover {
+  box-shadow: 0 0 20px 5px rgba(0,0,0,0.15);
+}
+
+.c11.c10 {
+  background-color: rgba(247,238,127,0.5);
+}
+
+.c11.c14 {
+  background-color: rgba(200,70,80,0.5);
+}
+
+.c12 {
+  font-family: monospace;
+  line-height: 30px;
+  font-size: 15px;
+  line-height: 30px;
+  display: inline-block;
+}
+
+.c13 {
+  width: 40px;
+  font-size: 20px;
+  height: 30px;
+  margin-left: 0 auto;
+  display: inline-block;
+}
+
+.c15 {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  -webkit-transition: -webkit-transform 150ms ease-in-out,box-shadow 200ms 0ms ease-in;
+  -webkit-transition: transform 150ms ease-in-out,box-shadow 200ms 0ms ease-in;
+  transition: transform 150ms ease-in-out,box-shadow 200ms 0ms ease-in;
+}
+
+.c15:hover {
+  -webkit-transform: rotate(360deg) scale(1.05);
+  -ms-transform: rotate(360deg) scale(1.05);
+  transform: rotate(360deg) scale(1.05);
+  box-shadow: 0px 0px 25px 2px rgba(0,0,0,0.3);
+}
+
+<Dash
+  match={
+    Object {
+      "params": Object {
+        "gameId": "id1",
+      },
+    }
+  }
+>
+  <div>
+    <NavBar
+      mode="dash"
+    >
+      <styled.div>
+        <div
+          className="c0"
+        >
+          <styled.div>
+            <div
+              className="c1"
+            >
+              <styled.div
+                onClick={[Function]}
+              >
+                <div
+                  className="c2"
+                  onClick={[Function]}
+                >
+                  On Sets
+                </div>
+              </styled.div>
+            </div>
+          </styled.div>
+          <styled.div
+            onClick={[Function]}
+          >
+            <div
+              className="c3"
+              onClick={[Function]}
+            >
+              <styled.div>
+                <div
+                  className="c4"
+                >
+                  <svg
+                    height="14px"
+                    viewBox="0 0 24 14"
+                    width="24px"
+                  >
+                    <rect
+                      height="2"
+                      rx="1"
+                      width="17"
+                      x="7"
+                      y="0"
+                    />
+                    <rect
+                      height="2"
+                      rx="1"
+                      width="24"
+                      x="0"
+                      y="6"
+                    />
+                    <rect
+                      height="2"
+                      rx="1"
+                      width="24"
+                      x="0"
+                      y="12"
+                    />
+                  </svg>
+                </div>
+              </styled.div>
+              <DropDown
+                isOpen={false}
+                onBlur={[Function]}
+                onFocus={[Function]}
+              >
+                <styled.div
+                  className=""
+                  id="menu"
+                  onBlur={[Function]}
+                  onFocus={[Function]}
+                  tabIndex="0"
+                >
+                  <div
+                    className="c5"
+                    id="menu"
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    tabIndex="0"
+                  >
+                    <styled.div>
+                      <div
+                        className="c6"
+                      />
+                    </styled.div>
+                    <styled.div
+                      onClick={[Function]}
+                    >
+                      <div
+                        className="c7"
+                        onClick={[Function]}
+                      >
+                        Log Out
+                      </div>
+                    </styled.div>
+                    <styled.div>
+                      <div
+                        className="c7"
+                      >
+                         Edit Profile 
+                      </div>
+                    </styled.div>
+                  </div>
+                </styled.div>
+              </DropDown>
+            </div>
+          </styled.div>
+        </div>
+      </styled.div>
+    </NavBar>
+    <Dash>
+      <Container
+        className=""
+        fluid={false}
+      >
+        <div
+          className="mui-container "
+        >
+          <styled.div>
+            <div
+              className="c8"
+            >
+              <styled.div>
+                <div
+                  className="c9"
+                >
+                  <div>
+                    Game ID#
+                  </div>
+                  <div>
+                    Players In Game
+                  </div>
+                  <div>
+                    Join
+                  </div>
+                </div>
+              </styled.div>
+              <styled.div
+                className="c10"
+              >
+                <div
+                  className="c10 c11"
+                >
+                  <styled.div>
+                    <div
+                      className="c12"
+                    >
+                      <Link
+                        replace={false}
+                        to="/game/id1"
+                      >
+                        <a
+                          href="/game/id1"
+                          onClick={[Function]}
+                        >
+                          id1
+                        </a>
+                      </Link>
+                    </div>
+                  </styled.div>
+                  <styled.div>
+                    <div
+                      className="c13"
+                    >
+                      0
+                    </div>
+                  </styled.div>
+                  <Button
+                    className=""
+                    color="primary"
+                    disabled={false}
+                    onClick={[Function]}
+                    size="default"
+                    style={
+                      Object {
+                        "margin": "0",
+                        "position": "inherit",
+                      }
+                    }
+                    variant="raised"
+                  >
+                    <button
+                      className="mui-btn mui-btn--primary mui-btn--raised "
+                      disabled={false}
+                      onClick={[Function]}
+                      onMouseDown={[Function]}
+                      onMouseLeave={[Function]}
+                      onMouseUp={[Function]}
+                      onTouchEnd={[Function]}
+                      onTouchStart={[Function]}
+                      style={
+                        Object {
+                          "margin": "0",
+                          "position": "inherit",
+                        }
+                      }
+                    >
+                      Join
+                      <span
+                        className="mui-btn__ripple-container"
+                      >
+                        <span
+                          className="mui-ripple"
+                          style={Object {}}
+                        />
+                      </span>
+                    </button>
+                  </Button>
+                </div>
+              </styled.div>
+              <styled.div
+                className="c14"
+              >
+                <div
+                  className="c14 c11"
+                >
+                  <styled.div>
+                    <div
+                      className="c12"
+                    >
+                      <Link
+                        replace={false}
+                        to="/game/id2"
+                      >
+                        <a
+                          href="/game/id2"
+                          onClick={[Function]}
+                        >
+                          id2
+                        </a>
+                      </Link>
+                    </div>
+                  </styled.div>
+                  <styled.div>
+                    <div
+                      className="c13"
+                    >
+                      1
+                    </div>
+                  </styled.div>
+                  <Button
+                    className=""
+                    color="primary"
+                    disabled={false}
+                    onClick={[Function]}
+                    size="default"
+                    style={
+                      Object {
+                        "margin": "0",
+                        "position": "inherit",
+                      }
+                    }
+                    variant="raised"
+                  >
+                    <button
+                      className="mui-btn mui-btn--primary mui-btn--raised "
+                      disabled={false}
+                      onClick={[Function]}
+                      onMouseDown={[Function]}
+                      onMouseLeave={[Function]}
+                      onMouseUp={[Function]}
+                      onTouchEnd={[Function]}
+                      onTouchStart={[Function]}
+                      style={
+                        Object {
+                          "margin": "0",
+                          "position": "inherit",
+                        }
+                      }
+                    >
+                      Join
+                      <span
+                        className="mui-btn__ripple-container"
+                      >
+                        <span
+                          className="mui-ripple"
+                          style={Object {}}
+                        />
+                      </span>
+                    </button>
+                  </Button>
+                </div>
+              </styled.div>
+            </div>
+          </styled.div>
+        </div>
+      </Container>
+    </Dash>
+    <styled.div>
+      <div
+        className="c15"
+      >
+        <Button
+          className=""
+          color="primary"
+          onClick={[Function]}
+          size="default"
+          style={
+            Object {
+              "fontSize": "30px",
+              "margin": "0",
+            }
+          }
+          variant="fab"
+        >
+          <button
+            className="mui-btn mui-btn--primary mui-btn--fab "
+            onClick={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchStart={[Function]}
+            style={
+              Object {
+                "fontSize": "30px",
+                "margin": "0",
+              }
+            }
+          >
+             
+            +
+             
+            <span
+              className="mui-btn__ripple-container"
+            >
+              <span
+                className="mui-ripple"
+                style={Object {}}
+              />
+            </span>
+          </button>
+        </Button>
+      </div>
+    </styled.div>
+  </div>
+</Dash>
+`;
