@@ -87,6 +87,7 @@ export default class Home extends React.Component {
             }}>
             Play Static
           </Button>
+          <H3>Active Game List</H3>
           <RowContainer>
             {this.state.games &&
               this.state.games.map((game, i) => {
@@ -97,6 +98,7 @@ export default class Home extends React.Component {
                       this.props.history.push(`/bot/${game}`);
                     }}>
                     {game}
+                    {ArchiveThumbnail()}
                   </RowPrimitive>
                 );
               })}
@@ -118,6 +120,22 @@ export default class Home extends React.Component {
   };
 }
 
+const ArchiveThumbnail = () => {
+  return (
+    <ArchivedIcon
+      onClick={e => {
+        e.stopPropagation();
+        console.log("TODO: Archive game");
+      }}>
+      <svg viewBox="0 0 100 125" width="100%" height="100%">
+        <g>
+          <path d="M93.548,34.032H81.946c-0.801,0-1.452,0.65-1.452,1.452s0.65,1.452,1.452,1.452h10.151v15.521   c-0.046,0.142-0.077,0.29-0.077,0.447v10.161H81.944H67.442h-0.001c-0.801,0-1.452,0.65-1.452,1.452l0.001,13.065H34.084V64.535   l0.002-0.019c0-0.801-0.65-1.452-1.452-1.452h-0.002H18.13H7.981V36.935h10.151c0.801,0,1.452-0.65,1.452-1.452   s-0.65-1.452-1.452-1.452H6.529c-0.801,0-1.452,0.65-1.452,1.452v16.972C5.031,52.598,5,52.746,5,52.903v40.645   C5,94.35,5.65,95,6.452,95h87.019c0.801,0,1.452-0.65,1.452-1.452V64.963C94.969,64.822,95,64.673,95,64.516V35.484   C95,34.682,94.35,34.032,93.548,34.032z M7.903,92.097V65.968H18.13h13.051v13.065c0,0.801,0.65,1.452,1.452,1.452h34.809   c0.385,0,0.754-0.153,1.026-0.425c0.272-0.272,0.425-0.642,0.425-1.026l-0.001-13.065h13.051h10.075v26.129H7.903z" />
+          <path d="M50.037,5c-0.801,0-1.452,0.65-1.452,1.452v42.945l-15.116-15.13c-0.567-0.567-1.487-0.566-2.054-0.001   c-0.567,0.567-0.567,1.487-0.001,2.054L49.01,53.93l0.12,0.098l0.098,0.08l0.104,0.056l0.146,0.078l0.115,0.036l0.156,0.047   c0.094,0.019,0.19,0.029,0.288,0.029s0.194-0.01,0.288-0.029l0.158-0.048l0.114-0.035l0.148-0.079l0.102-0.055l0.103-0.084   l0.116-0.095l17.595-17.61c0.566-0.567,0.566-1.487-0.001-2.054c-0.567-0.565-1.487-0.566-2.054,0.001l-15.116,15.13V6.452   C51.488,5.65,50.838,5,50.037,5z" />
+        </g>
+      </svg>
+    </ArchivedIcon>
+  );
+};
 const GamePic = styled.img`
   width: 512px;
   position: absolute;
@@ -149,15 +167,24 @@ const GameListWrapper = styled.div`
   margin: 50px auto;
 `;
 
+const ArchivedIcon = styled.div`
+  right: 5px;
+  top: 5px;
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+`;
 const RowContainer = styled.div`
   border-radius: 20px;
   box-shadow: 3px 5px 30px -4px rgba(0, 0, 0, 0.75);
   margin: 0 auto;
-  margin-top: 80px;
+  margin-top: 40px;
   background-color: #f2f2f2;
   padding: 5px;
 `;
 export const RowPrimitive = styled.div`
+  position: relative;
   margin: 0 auto;
   margin-bottom: 10px;
   margin-top: 10px;
@@ -166,8 +193,6 @@ export const RowPrimitive = styled.div`
   height: 50px;
   border-radius: 5px;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   transition: all 200ms ease-in-out;
   cursor: pointer;
   &:hover {
