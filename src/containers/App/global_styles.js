@@ -1,13 +1,5 @@
 import { injectGlobal } from "styled-components";
 
-/* eslint no-unused-expressions: 0 */
-
-/*
- * TODO:
- * - use color more sparinly.
- * - use more transparent/lighter background colors.
- * - implement Drag/Drop on gameboard.
- */
 export const Colors = {
   bg: "#f4f9fd",
   bgRed: "#99535E",
@@ -39,9 +31,8 @@ injectGlobal`
     width: 100%;
   }
 
-
   body.fontLoaded {
-    font-family: 'Vollkorn', serif;
+    font-family: 'Catamaran', sans-serif;
     background-color: #f2f2f2;
   }
 

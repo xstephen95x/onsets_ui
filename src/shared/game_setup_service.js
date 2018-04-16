@@ -1,4 +1,6 @@
-export const shuffleCards = n => {
+// @flow
+
+export const shuffleCards = (n: number) => {
   let combs = shuffleArray(getCombinations("rgby"));
   let cards = [];
   for (var i = 0; i < n; i++) {
@@ -25,6 +27,7 @@ export const shuffleCards = n => {
   }
   return cards;
 };
+
 export const rollCubes = () => {
   let cubes = {
     colors: [],

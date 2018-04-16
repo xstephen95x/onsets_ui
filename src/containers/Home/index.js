@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import firebase from "firebase";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import NavBar from "components/NavBar";
 import Button from "muicss/lib/react/button";
@@ -14,6 +13,7 @@ let playOnline = {
   width: "200px",
   height: "100px"
 };
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -26,6 +26,7 @@ export default class Home extends React.Component {
   componentWillMount() {
     this.attachAuthListener();
   }
+
   render() {
     return (
       <div>
@@ -33,14 +34,58 @@ export default class Home extends React.Component {
         <HomeWrapper>
           <Header>Welcome to On-Sets Online!</Header>
           <H3>
-            Play <a href="http://agloa.org/on-sets/">On Sets</a> in a 2-player match against a bot.
-            You can also use the static version of the game as an On Sets game to play in person.
+            <a href="http://agloa.org/on-sets/">On Sets</a> Online matches are 2-player shakes where
+            you face off against a bot. You can also play{" "}
+            <Bold
+              onClick={() => {
+                this.props.history.push("/play");
+              }}>
+              {" "}
+              <a>On Sets offline </a>
+            </Bold>{" "}
+            with your friends.
           </H3>
           {this.renderGameList()}
         </HomeWrapper>
+        {this.state.auth && (
+          <ButtonWrapper>
+            <Button variant="fab" color="primary" onClick={this.createNewGame} style={newGameStyle}>
+              {" "}
+              +{" "}
+            </Button>
+          </ButtonWrapper>
+        )}
       </div>
     );
   }
+
+  renderGameList = () => {
+    if (this.state.auth) {
+      return (
+        <GameListWrapper>
+          <H3>Active Game List</H3>
+          <RowContainer>
+            {this.state.games &&
+              this.state.games.map((game, i) => {
+                return (
+                  <RowPrimitive
+                    className={i % 2 ? "even" : "odd"}
+                    key={`game_row_${i}`}
+                    onClick={() => {
+                      this.props.history.push(`/bot/${game}`);
+                    }}>
+                    {game}
+                    {ArchiveThumbnail(this.archiveGame)}
+                  </RowPrimitive>
+                );
+              })}
+          </RowContainer>
+        </GameListWrapper>
+      );
+    } else {
+      return <LogIn />;
+    }
+  };
 
   fetchGameList = (): void => {
     if (!firebase.auth().currentUser) return;
@@ -67,65 +112,24 @@ export default class Home extends React.Component {
     this.props.history.push(`/bot/${newGameID}`);
   };
 
-  renderGameList = () => {
-    if (this.state.auth) {
-      return (
-        <GameListWrapper>
-          {this.state.auth && (
-            <Button
-              color="primary"
-              variant="raised"
-              style={playOnline}
-              onClick={this.createNewGame}>
-              Play Against Bot
-            </Button>
-          )}
-          <Button
-            style={playOnline}
-            onClick={() => {
-              this.props.history.push("/play");
-            }}>
-            Play Static
-          </Button>
-          <H3>Active Game List</H3>
-          <RowContainer>
-            {this.state.games &&
-              this.state.games.map((game, i) => {
-                return (
-                  <RowPrimitive
-                    key={`game_row_${i}`}
-                    onClick={() => {
-                      this.props.history.push(`/bot/${game}`);
-                    }}>
-                    {game}
-                    {ArchiveThumbnail()}
-                  </RowPrimitive>
-                );
-              })}
-          </RowContainer>
-        </GameListWrapper>
-      );
-    } else {
-      return <LogIn />;
-    }
+  archiveGame = () => {
+    console.log("TODO");
   };
 
   attachAuthListener = () => {
     firebase.auth().onAuthStateChanged(user => {
       this.setState({ auth: Boolean(user) });
-      if (user) {
-        this.fetchGameList();
-      }
+      if (user) this.fetchGameList();
     });
   };
 }
 
-const ArchiveThumbnail = () => {
+const ArchiveThumbnail = onClick => {
   return (
     <ArchivedIcon
       onClick={e => {
         e.stopPropagation();
-        console.log("TODO: Archive game");
+        onClick();
       }}>
       <svg viewBox="0 0 100 125" width="100%" height="100%">
         <g>
@@ -136,6 +140,7 @@ const ArchiveThumbnail = () => {
     </ArchivedIcon>
   );
 };
+
 const GamePic = styled.img`
   width: 512px;
   position: absolute;
@@ -154,7 +159,7 @@ const H3 = styled.h3`
 const HomeWrapper = styled.div`
   font-size: 26px;
   width: 100%;
-  position: absolute;
+  position: relative;
   top: 70px;
   text-align: center;
   color: black;
@@ -199,9 +204,29 @@ export const RowPrimitive = styled.div`
     box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.15);
   }
   &.even {
-    background-color: rgba(247, 238, 127, 0.5);
-  }
-  &.odd {
     background-color: rgba(200, 70, 80, 0.5);
   }
+  &.odd {
+    background-color: rgba(247, 238, 127, 0.5);
+  }
 `;
+
+const Bold = styled.strong``;
+
+const ButtonWrapper = styled.div`
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  transition: transform 250ms ease-in-out, box-shadow 200ms 0ms ease-in;
+  &:hover {
+    transform: rotate(180deg) scale(1.05);
+    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.3);
+  }
+`;
+const newGameStyle = {
+  fontSize: "30px",
+  margin: "0"
+};

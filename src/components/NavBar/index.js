@@ -205,6 +205,7 @@ const Name = styled.div`
   cursor: pointer;
   text-shadow: 1px 1px 0 black;
   user-select: none;
+  font-family: "Vollkorn", serif;
   &:hover {
     color: yellow;
   }
