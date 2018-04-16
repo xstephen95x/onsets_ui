@@ -31,7 +31,6 @@ export default class Home extends React.Component<Props, State> {
   }
 
   componentWillMount() {
-    console.log(this.props);
     this.attachAuthListener();
   }
 
@@ -238,6 +237,7 @@ const ButtonWrapper = styled.div`
     box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.3);
   }
 `;
+
 const newGameStyle = {
   fontSize: "30px",
   margin: "0"

@@ -1,5 +1,7 @@
+// @flow
 /**
- * Gamepage
+ * Gamepage.
+ * Static version of game, meant for players to use while in person
  */
 import React from "react";
 import styled from "styled-components";
