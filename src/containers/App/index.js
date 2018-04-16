@@ -1,3 +1,4 @@
+// @flow
 /**
  * App
  *
@@ -30,7 +31,8 @@ firebase.initializeApp({
   messagingSenderId: "632428363886"
 });
 
-class App extends React.Component {
+type Props = {};
+class App extends React.Component<Props> {
   render() {
     // Declare all routes at the top level, then check auth on each page.
     return (
@@ -50,7 +52,3 @@ class App extends React.Component {
 }
 
 export default DragDropContext(HTML5Backend)(App);
-
-App.propTypes = {
-  children: PropTypes.node
-};

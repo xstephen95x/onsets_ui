@@ -1,11 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
+// @flow
+import * as React from "react";
 import firebase from "firebase";
 import styled from "styled-components";
-import NavBar from "components/NavBar";
 import Button from "muicss/lib/react/button";
 import uuidv4 from "uuid/v4";
+import type { RouterHistory, Location, Match } from "react-router-dom";
 
+import NavBar from "components/NavBar";
 import LogIn from "containers/LogIn";
 
 let playOnline = {
@@ -14,8 +15,14 @@ let playOnline = {
   height: "100px"
 };
 
-export default class Home extends React.Component {
-  constructor(props) {
+type Props = { match: Match, location: Location, history: RouterHistory };
+type State = {
+  auth: boolean,
+  games: Array<string>
+};
+
+export default class Home extends React.Component<Props, State> {
+  constructor(props: any) {
     super(props);
     this.state = {
       auth: false,
@@ -24,6 +31,7 @@ export default class Home extends React.Component {
   }
 
   componentWillMount() {
+    console.log(this.props);
     this.attachAuthListener();
   }
 
@@ -34,8 +42,10 @@ export default class Home extends React.Component {
         <HomeWrapper>
           <Header>Welcome to On-Sets Online!</Header>
           <H3>
-            <a href="http://agloa.org/on-sets/">On Sets</a> Online matches are 2-player shakes where
-            you face off against a bot. You can also play{" "}
+            <a target="_blank" href="http://agloa.org/on-sets/">
+              On Sets
+            </a>{" "}
+            Online matches are 2-player shakes where you face off against a bot. You can also play{" "}
             <Bold
               onClick={() => {
                 this.props.history.push("/play");
@@ -98,7 +108,7 @@ export default class Home extends React.Component {
       });
   };
 
-  createNewGame = () => {
+  createNewGame = (): void => {
     let newGameID = uuidv4();
     let path = `users/${firebase.auth().currentUser.uid}/games`;
     firebase
@@ -112,11 +122,13 @@ export default class Home extends React.Component {
     this.props.history.push(`/bot/${newGameID}`);
   };
 
-  archiveGame = () => {
+  archiveGame = (): void => {
+    //NOTE: a user can archive a game and so can a bot.
+    // Users archive games by removing them from their game list
     console.log("TODO");
   };
 
-  attachAuthListener = () => {
+  attachAuthListener = (): void => {
     firebase.auth().onAuthStateChanged(user => {
       this.setState({ auth: Boolean(user) });
       if (user) this.fetchGameList();

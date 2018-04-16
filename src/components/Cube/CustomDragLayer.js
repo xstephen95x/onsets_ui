@@ -10,8 +10,9 @@ const CustomDragLayer = ({ item, initialOffset, currentOffset }) => {
     pointerEvents: "none",
     zIndex: "500",
     position: "fixed",
-    left: "0",
-    right: "0",
+    left: "0px",
+    right: "0px",
+    top: "0px",
     width: "100%",
     height: "100%"
   };
