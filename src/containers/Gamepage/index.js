@@ -1,9 +1,11 @@
 // @flow
+
 /**
  * Gamepage.
  * Static version of game, meant for players to use while in person
  */
 import React from "react";
+import type { Node } from "react";
 import styled from "styled-components";
 
 import Board from "components/Board";
@@ -20,70 +22,43 @@ import UniverseGrid from "components/Universe/UniverseGrid";
 import AlertBar from "components/AlertBar";
 import { rollCubes, shuffleCards } from "shared/game_setup_service";
 
-export default class Gamepage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      alert: null,
-      challenge: null,
-      solutions: null,
-      auth: null,
-      movingCube: null,
-      stage: "universe", // new , universe, variations, goal, ingame, challenge, reveal
-      stall: {
-        staller: 0,
-        began: 0
-      },
-      turn: 0,
-      variations: {
-        0: null,
-        1: null,
-        2: null
-      },
-      players: {
-        0: null,
-        1: null,
-        2: null
-      },
-      playerCount: 0,
-      currentPlayer: null,
-      permitted: [],
-      required: [],
-      forbidden: [],
-      cards: [],
-      universe: 0,
-      cubes: {
-        colors: [],
-        operators: [],
-        universe: [],
-        numbers: []
-      }
-    };
-  }
+import type { RouterHistory, Location, Match } from "react-router-dom";
+type Props = { match: Match, location: Location, history: RouterHistory };
+type State = GameStateOffline;
+
+export default class Gamepage extends React.Component<Props, State> {
+  state = {
+    alert: undefined,
+    cards: undefined,
+    challenge: undefined,
+    cubes: undefined,
+    forbidden: [],
+    goal: undefined,
+    movingCube: undefined,
+    permitted: [],
+    required: [],
+    stage: "new",
+    stall: { began: 0 },
+    turn: 0,
+    variations: undefined
+  };
 
   componentWillMount() {
-    this.setState({ cubes: rollCubes() });
+    this.setState({ cubes: rollCubes(), stage: "universe" });
   }
 
   render() {
-    return this.renderGameBoard();
-  }
-
-  // ----- Render Control ------
-  renderGameBoard = () => {
     return (
-      <GamePrimitive>
+      <GameWrapper>
         <NavBar
           mode="game"
           history={this.props.history}
-          getPlayerIndex={this.getPlayerIndex}
           stall={this.state.stall}
           resetStall={this.resetStall}
           setStall={this.setStall}
           turn={this.state.turn}
         />
         <AlertBar alert={this.state.alert} />
-        {this.renderChallengeButtons()}
         <BoardPrimitive className={this.state.alert ? "alert" : ""}>
           <ResourcesWrapper>
             {Resources({
@@ -95,86 +70,36 @@ export default class Gamepage extends React.Component {
             })}
             {this.renderGoalArea()}
           </ResourcesWrapper>
-          {this.renderSolutions()}
-          <ScratchPad
-            mode="game"
-            submitSolution={this.submitSolution}
-            challenge={this.state.challenge}
-          />
+          <ScratchPad mode="game" challenge={this.state.challenge} />
           {this.renderBoard()}
           {this.renderVariations()}
         </BoardPrimitive>
-      </GamePrimitive>
+      </GameWrapper>
     );
-  };
+  }
 
-  renderChallengeButtons = () => {
-    if (this.state.stage === "ingame") {
-      return (
-        <div>
-          <Button
-            style={{
-              position: "fixed",
-              bottom: "80px",
-              right: "20px",
-              width: "100px"
-            }}
-            color="primary"
-            variant="raised"
-            onClick={this.challengeNow}>
-            Now
-          </Button>
-          <Button
-            style={{
-              position: "fixed",
-              bottom: "20px",
-              right: "20px",
-              width: "100px"
-            }}
-            color="danger "
-            variant="raised"
-            onClick={this.challengeNow}>
-            Never
-          </Button>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  };
-  renderSolutions = () => {
-    if (this.state.stage === "reveal") {
-      return (
-        <SolutionView
-          online={true}
-          solutions={this.state.solutions}
-          players={this.state.players}
-          challenge={this.state.challenge}
-        />
-      );
-    } else {
-      return null;
-    }
-  };
-  renderGoalArea = () => {
+  // ----- Render Control ------
+
+  renderGoalArea = (): Node => {
     if (["goal", "ingame", "challenge", "reveal"].includes(this.state.stage)) {
       return (
         <GoalArea
-          markUsed={this.markUsed}
-          isOnline={false}
-          isDisabled={this.state.stage === "goal"}
-          setMovingCube={this.setMovingCube}
-          movingCube={this.state.movingCube}
-          setGoal={this.setGoal}
           cubes={this.state.cubes}
           goal={this.state.goal}
+          isDisabled={this.state.stage === "goal"}
+          isOnline={false}
+          markUsed={this.markUsed}
+          movingCube={this.state.movingCube}
+          setGoal={this.setGoal}
+          setMovingCube={this.setMovingCube}
         />
       );
     } else {
       return null;
     }
   };
-  renderBoard = () => {
+
+  renderBoard = (): Node => {
     if (["ingame", "challenge", "reveal"].includes(this.state.stage)) {
       return Board({
         game: this.state,
@@ -183,7 +108,8 @@ export default class Gamepage extends React.Component {
       });
     }
   };
-  renderVariations = () => {
+
+  renderVariations = (): Node => {
     if (this.state.stage === "universe") {
       return <UniverseSetup setUniverse={this.setUniverse} />;
     } else if (["goal", "ingame", "challenge", "reveal"].includes(this.state.stage)) {
@@ -207,7 +133,8 @@ export default class Gamepage extends React.Component {
 
   // --------- Methods -------------
 
-  markUsed = cube => {
+  markUsed = (cube: Cube): void => {
+    if (!this.state.cubes) throw new Error("Internal Rep Error");
     let numbers = this.state.cubes.numbers;
     for (var i = 0; i < numbers.length; i++) {
       if (numbers[i].index === cube.index) {
@@ -219,30 +146,7 @@ export default class Gamepage extends React.Component {
     this.setState({ cubes });
   };
 
-  submitSolution = submission => {
-    this.setState({ solutions: submission });
-    this.setState({ stage: "reveal" });
-  };
-
-  challengeNow = () => {
-    this.setState({
-      challenge: {
-        began: new Date().getTime(),
-        now: true
-      }
-    });
-  };
-
-  challengeNever = () => {
-    this.setState({
-      challenge: {
-        began: new Date().getTime(),
-        now: false
-      }
-    });
-  };
-
-  setUniverse = size => {
+  setUniverse = (size: number) => {
     this.setState({ universe: size });
     this.setState({ cards: shuffleCards(size) });
     this.setState({ stage: "variations" });
@@ -261,9 +165,10 @@ export default class Gamepage extends React.Component {
     }
   };
 
-  setVariation = variation => {
+  setVariation = (variation: string): void => {
     let variations = this.state.variations;
-    if (this.state.variations[0] == null) {
+    if (!this.state.variations || !variations) return;
+    if (!this.state.variations[0]) {
       variations[0] = variation;
     } else if (this.state.variations[1] == null) {
       variations[1] = variation;
@@ -273,45 +178,43 @@ export default class Gamepage extends React.Component {
     } else {
       return;
     }
-    this.setState((variations: variations));
+    this.setState({ variations: variations });
   };
 
   endTurn = () => {
     this.setState({ turn: this.state.turn + 1 });
   };
 
-  setGoal = (goal, value) => {
+  setGoal = (goal: Goal, value: number) => {
     this.setState({ goal: goal });
     this.setState({ stage: "ingame" });
     this.setState({ goal_value: value });
     this.endTurn();
   };
 
-  setMovingCube = cube => {
-    if (!cube) {
-      this.setState({ movingCube: null });
-    } else {
-      this.setState({ movingCube: cube });
-    }
+  setMovingCube = (cube?: Cube) => {
+    if (!cube) this.setState({ movingCube: undefined });
+    else this.setState({ movingCube: cube });
   };
 
-  moveCubeTo = category => {
+  moveCubeTo = (category: BoardArea): void => {
     const movingCube = this.state.movingCube;
     if (movingCube) {
       let update = {};
       update[category] = this.state[category].concat([movingCube]);
       this.setState(update);
-      this.setMovingCube(null);
+      this.setMovingCube();
       this.removeFromResources(movingCube);
     }
   };
 
-  removeFromResources = cube => {
+  removeFromResources = (cube: Cube): void => {
     let cubes = this.state.cubes;
+    if (!cubes || !this.state.cubes) return;
     let newResources = this.state.cubes[cube.type].filter(resource => {
       return resource.index !== cube.index;
     });
-    cubes[cube.type] = newResources;
+    cubes[cube.type] = (newResources: any);
     this.setState({ cubes: cubes });
     this.endTurn();
   };
@@ -322,7 +225,7 @@ const ResourcesWrapper = styled.div`
   height: 180px;
   margin-top: 70px;
 `;
-const GamePrimitive = styled.div`
+const GameWrapper = styled.div`
   padding-bottom: 80px;
 `;
 const BoardPrimitive = styled.div`

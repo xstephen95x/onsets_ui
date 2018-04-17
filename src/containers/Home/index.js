@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import type { Node } from "react";
 import firebase from "firebase";
 import styled from "styled-components";
 import Button from "muicss/lib/react/button";
@@ -22,13 +23,10 @@ type State = {
 };
 
 export default class Home extends React.Component<Props, State> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      auth: false,
-      games: []
-    };
-  }
+  state = {
+    auth: false,
+    games: []
+  };
 
   componentWillMount() {
     this.attachAuthListener();
@@ -41,7 +39,7 @@ export default class Home extends React.Component<Props, State> {
         <HomeWrapper>
           <Header>Welcome to On-Sets Online!</Header>
           <H3>
-            <a target="_blank" href="http://agloa.org/on-sets/">
+            <a target="_blank" href="http://agloa.org/on-sets/" rel="noopener noreferrer">
               On Sets
             </a>{" "}
             Online matches are 2-player shakes where you face off against a bot. You can also play{" "}
@@ -68,13 +66,13 @@ export default class Home extends React.Component<Props, State> {
     );
   }
 
-  renderGameList = () => {
+  renderGameList = (): Node => {
     if (this.state.auth) {
       return (
         <GameListWrapper>
           <H3>Active Game List</H3>
           <RowContainer>
-            {this.state.games &&
+            {this.state.games ? (
               this.state.games.map((game, i) => {
                 return (
                   <RowPrimitive
@@ -84,10 +82,15 @@ export default class Home extends React.Component<Props, State> {
                       this.props.history.push(`/bot/${game}`);
                     }}>
                     {game}
-                    {ArchiveThumbnail(this.archiveGame)}
+                    <ArchiveThumbnail clickHandler={this.archiveGame} />
                   </RowPrimitive>
                 );
-              })}
+              })
+            ) : (
+              <div>
+                No Games Yet. <Bold onClick={this.createNewGame}>Start One</Bold> now!
+              </div>
+            )}
           </RowContainer>
         </GameListWrapper>
       );
@@ -98,10 +101,9 @@ export default class Home extends React.Component<Props, State> {
 
   fetchGameList = (): void => {
     if (!firebase.auth().currentUser) return;
-    let path = `users/${firebase.auth().currentUser.uid}/games`;
     firebase
       .database()
-      .ref(path)
+      .ref(`users/${firebase.auth().currentUser.uid}/games`)
       .on("value", snapshot => {
         this.setState({ games: snapshot.val() });
       });
@@ -135,12 +137,12 @@ export default class Home extends React.Component<Props, State> {
   };
 }
 
-const ArchiveThumbnail = onClick => {
+const ArchiveThumbnail = ({ clickHandler }) => {
   return (
     <ArchivedIcon
       onClick={e => {
         e.stopPropagation();
-        onClick();
+        clickHandler();
       }}>
       <svg viewBox="0 0 100 125" width="100%" height="100%">
         <g>

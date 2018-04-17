@@ -1,4 +1,5 @@
 // @flow
+//NOTE: These type declarations may differ from those used in the back-end repo
 
 type GameState = {
   bot_first: boolean,
@@ -6,20 +7,39 @@ type GameState = {
   challenge?: Challenge,
   cubes?: Resources,
   currentPlayer?: number,
-  forbidden: Array<Cube>,
+  forbidden?: Array<Cube>,
   goal?: Goal,
   goal_value?: number,
   log: Array<Move>,
-  permitted: Array<Cube>,
+  permitted?: Array<Cube>,
   players: Array<Player>,
-  required: Array<Cube>,
+  required?: Array<Cube>,
   solutions?: SolutionStrings,
   stage: Stage,
-  stall?: Stall,
+  stall: ?Stall,
   turn: number,
   universe?: number,
-  uuid: string,
-  variations: Array<string>
+  uuid: string
+};
+
+type GameStateOffline = {
+  auth?: any,
+  alert: ?string,
+  cards?: Array<Card>,
+  challenge?: Challenge,
+  cubes?: Resources,
+  currentPlayer?: number,
+  forbidden: Array<Cube>,
+  goal?: Goal,
+  goal_value?: number,
+  movingCube: ?Cube,
+  permitted: Array<Cube>,
+  required: Array<Cube>,
+  stage: Stage,
+  stall: Stall,
+  turn: number,
+  universe?: number,
+  variations?: Array<string>
 };
 // -------------- Cubes -----------------
 type Cube = ColorCube | OperatorCube | UniverseCube | NumberCube;
@@ -54,7 +74,8 @@ type NumberCube = {
   index: number,
   type: "numbers",
   inverted?: boolean,
-  value: number
+  value: number,
+  wasUsed?: boolean
 };
 
 // ------- Cube Data Structures ---------------
@@ -78,9 +99,11 @@ type Goal = [
 // ------------ Other --------------------------
 
 type Move = {
-  area: "permitted" | "forbidden" | "required",
+  area: BoardArea,
   cube: Cube
 };
+
+type BoardArea = "permitted" | "forbidden" | "required";
 
 type Card = { r: boolean, g: boolean, b: boolean, y: boolean };
 
@@ -102,7 +125,7 @@ type Player = {
 
 type Stall = {
   began: number,
-  stalledIndex: number
+  stalledIndex?: number
 };
 type Challenge = {
   caller_uid: string,

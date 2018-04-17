@@ -1,8 +1,11 @@
+/** This file stores a list of variations.
+ * TODO: Make  {elementary:[], middle:[], junior:[], senior:[]}
+ *
+ */
 export default [
   {
     name: "Multiple Operations",
-    desc:
-      "Any operation sign not in Forbidden may be used many times in any Solution"
+    desc: "Any operation sign not in Forbidden may be used many times in any Solution"
   },
   {
     name: "Two Operations",

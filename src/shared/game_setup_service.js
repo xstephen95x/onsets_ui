@@ -28,7 +28,7 @@ export const shuffleCards = (n: number) => {
   return cards;
 };
 
-export const rollCubes = () => {
+export const rollCubes = (): Resources => {
   let cubes = {
     colors: [],
     operators: [],
@@ -38,14 +38,12 @@ export const rollCubes = () => {
   for (var i = 0; i < 18; i++) {
     let cube = getRandomIntInclusive(1, 6);
     if (i < 8) {
-      //color cube
       cubes.colors.push({
         index: i,
         value: chooseColor(cube),
         type: "colors"
       });
     } else if (i >= 8 && i < 12) {
-      // operator
       cubes.operators.push({
         index: i,
         value: chooseOperator(cube),
@@ -65,7 +63,8 @@ export const rollCubes = () => {
       });
     }
   }
-  return cubes;
+
+  return (cubes: any);
 };
 
 const chooseNumber = face => {
@@ -88,6 +87,8 @@ const chooseUniverse = cube => {
       return "=";
     case 6:
       return "⊆";
+    default:
+      throw new Error("Invalid Universe Cube");
   }
 };
 
@@ -105,10 +106,12 @@ const chooseOperator = cube => {
       return "∪";
     case 6:
       return "∩";
+    default:
+      throw new Error("Invalid Operator");
   }
 };
 
-const chooseColor = cube => {
+const chooseColor = (cube): Color => {
   switch (cube) {
     case 1:
       return "R";
@@ -122,6 +125,8 @@ const chooseColor = cube => {
       return "R";
     case 6:
       return "B";
+    default:
+      throw new Error("Invalid Color");
   }
 };
 /**

@@ -1,29 +1,32 @@
+// @flow
+
 import React from "react";
+import type { Node } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Colors } from "containers/App/global_styles";
 import Variations from "./variation_list";
-import Tooltip from "react-tooltip"; //  https://www.npmjs.com/package/react-tooltip
+import Tooltip from "react-tooltip";
 
-export default class VariationsBox extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+type Props = {
+  variations?: Array<string>,
+  setVariation: (name: string) => any
+};
 
+type FullVariation = {
+  name: string,
+  desc: string
+};
+
+export default class VariationsBox extends React.Component<Props> {
   render() {
-    let getVariations = () => {
-      let names = [];
-      Variations.forEach(elm => {
-        names.push(elm.name);
-      });
-    };
-
     return (
       <VariationsPrimitive>
         <Title>Variations</Title>
-        {Variations.map((variation, i) => {
-          let isCalled = Object.values(this.props.variations);
-          let isSelected = isCalled.includes(variation.name);
+        {Variations.map((variation: FullVariation, i: number) => {
+          let isSelected = false;
+          if (this.props.variations)
+            isSelected = Object.values(this.props.variations).includes(variation.name);
           return (
             <VarationPrimitive
               key={"variation-choice-" + i}
@@ -31,18 +34,12 @@ export default class VariationsBox extends React.Component {
               data-tip={variation.desc}
               data-for={`${variation.name}-var`}
               className={isSelected ? "selected" : "unselected"}
-              onClick={
-                isSelected ? null : this.handleClick.bind(this, variation)
-              }
-            >
+              onClick={() => {
+                this.handleClick(variation, isSelected);
+              }}>
               {variation.name}
               <div style={{ fontFamily: "helvetica" }}>
-                <Tooltip
-                  id={`${variation.name}-var`}
-                  multiline={true}
-                  place="top"
-                  effect="solid"
-                />
+                <Tooltip id={`${variation.name}-var`} multiline={true} place="top" effect="solid" />
               </div>
             </VarationPrimitive>
           );
@@ -51,8 +48,8 @@ export default class VariationsBox extends React.Component {
     );
   }
 
-  handleClick = (variation, e) => {
-    this.props.setVariation(variation.name);
+  handleClick = (variation: FullVariation, isSelected: boolean): void => {
+    if (!isSelected) this.props.setVariation(variation.name);
   };
 }
 
