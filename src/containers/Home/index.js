@@ -71,31 +71,37 @@ export default class Home extends React.Component<Props, State> {
       return (
         <GameListWrapper>
           <H3>Active Game List</H3>
-          <RowContainer>
-            {this.state.games ? (
-              this.state.games.map((game, i) => {
-                return (
-                  <RowPrimitive
-                    className={i % 2 ? "even" : "odd"}
-                    key={`game_row_${i}`}
-                    onClick={() => {
-                      this.props.history.push(`/bot/${game}`);
-                    }}>
-                    {game}
-                    <ArchiveThumbnail clickHandler={this.archiveGame} />
-                  </RowPrimitive>
-                );
-              })
-            ) : (
-              <div>
-                No Games Yet. <Bold onClick={this.createNewGame}>Start One</Bold> now!
-              </div>
-            )}
-          </RowContainer>
+          <RowContainer>{this.renderGameListInner()}</RowContainer>
         </GameListWrapper>
       );
     } else {
       return <LogIn />;
+    }
+  };
+
+  renderGameListInner = (): Node => {
+    if (!this.state.games) {
+      return (
+        <div>
+          No Games Yet. <Bold onClick={this.createNewGame}>Start One</Bold> now!
+        </div>
+      );
+    } else if (this.state.games.length === 0) {
+      return <div>Loading...</div>;
+    } else {
+      return this.state.games.map((game, i) => {
+        return (
+          <RowPrimitive
+            className={i % 2 ? "even" : "odd"}
+            key={`game_row_${i}`}
+            onClick={() => {
+              this.props.history.push(`/bot/${game}`);
+            }}>
+            {game}
+            <ArchiveThumbnail clickHandler={() => this.archiveGame(game)} />
+          </RowPrimitive>
+        );
+      });
     }
   };
 
@@ -123,10 +129,35 @@ export default class Home extends React.Component<Props, State> {
     this.props.history.push(`/bot/${newGameID}`);
   };
 
-  archiveGame = (): void => {
-    //NOTE: a user can archive a game and so can a bot.
+  archiveGame = (uuid: string): void => {
     // Users archive games by removing them from their game list
-    console.log("TODO");
+    // then marking the game as archived. The server moves games
+    // marked archived to the archived branch.
+
+    let userPath = `users/${firebase.auth().currentUser.uid}/games`;
+    let gamePath = `bots/${uuid}`;
+
+    firebase
+      .database()
+      .ref(userPath)
+      .transaction(node => {
+        if (!node) node = [];
+        return node.filter(id => id !== uuid);
+      });
+
+    firebase
+      .database()
+      .ref(gamePath)
+      .transaction(
+        node => {
+          if (!node) return 0;
+          console.log(node);
+          node.archived = true;
+          return node;
+        },
+        () => {},
+        true
+      );
   };
 
   attachAuthListener = (): void => {
@@ -150,10 +181,22 @@ const ArchiveThumbnail = ({ clickHandler }) => {
           <path d="M50.037,5c-0.801,0-1.452,0.65-1.452,1.452v42.945l-15.116-15.13c-0.567-0.567-1.487-0.566-2.054-0.001   c-0.567,0.567-0.567,1.487-0.001,2.054L49.01,53.93l0.12,0.098l0.098,0.08l0.104,0.056l0.146,0.078l0.115,0.036l0.156,0.047   c0.094,0.019,0.19,0.029,0.288,0.029s0.194-0.01,0.288-0.029l0.158-0.048l0.114-0.035l0.148-0.079l0.102-0.055l0.103-0.084   l0.116-0.095l17.595-17.61c0.566-0.567,0.566-1.487-0.001-2.054c-0.567-0.565-1.487-0.566-2.054,0.001l-15.116,15.13V6.452   C51.488,5.65,50.838,5,50.037,5z" />
         </g>
       </svg>
+      <ToolTip className="archived"> Archive </ToolTip>
     </ArchivedIcon>
   );
 };
 
+const ToolTip = styled.div`
+  visibility: hidden;
+  position: relative;
+  background: black;
+  font-size: 15px;
+  color: white;
+  left: 50px;
+  top: -30px;
+  border-radius: 5px;
+  width: 60px;
+`;
 const GamePic = styled.img`
   width: 512px;
   position: absolute;
@@ -192,6 +235,11 @@ const ArchivedIcon = styled.div`
   height: 40px;
   width: 40px;
   cursor: pointer;
+  :hover {
+    .archived {
+      visibility: visible;
+    }
+  }
 `;
 const RowContainer = styled.div`
   border-radius: 20px;
@@ -224,7 +272,9 @@ export const RowPrimitive = styled.div`
   }
 `;
 
-const Bold = styled.strong``;
+const Bold = styled.strong`
+  color: blue;
+`;
 
 const ButtonWrapper = styled.div`
   position: absolute;

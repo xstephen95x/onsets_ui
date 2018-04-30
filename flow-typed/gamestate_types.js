@@ -39,8 +39,14 @@ type GameStateOffline = {
   stall: Stall,
   turn: number,
   universe?: number,
-  variations?: Array<string>
+  variations: Array<string>
 };
+
+// -------------- Firebase ---------------------------
+type TransactionReceipt = Promise<{
+  committed: boolean,
+  snapshot: $npm$firebase$database$DataSnapshot | null
+}>;
 // -------------- Cubes -----------------
 type Cube = ColorCube | OperatorCube | UniverseCube | NumberCube;
 
@@ -134,10 +140,11 @@ type Challenge = {
   forceout: Boolean
 };
 type SolutionStrings = {
-  [uid: string]: {
-    solution: string,
-    restriction: string
-  }
+  [uid: string]: SolutionSubmission
+};
+type SolutionSubmission = {
+  solution: string,
+  restriction: string
 };
 
 // // ------------- Restrictions ------------------

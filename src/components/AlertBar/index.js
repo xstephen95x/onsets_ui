@@ -1,21 +1,32 @@
+// @flow
 import React from "react";
 import PropTypes from "prop-types";
 import { Colors } from "containers/App/global_styles";
 import styled from "styled-components";
 import firebase from "firebase";
 
-export default class AlertBar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: "",
-      banner: null
-    };
+type Props = {
+  alert: ?string,
+  challenge?: Challenge,
+  players?: Array<Player>
+};
+type State = {
+  message: string,
+  banner: ?{
+    challengeSummary: string,
+    thirdPlayer: string
   }
+};
+export default class AlertBar extends React.Component<Props, State> {
+  state = {
+    message: "",
+    banner: undefined
+  };
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     this.createBanner(nextProps);
   }
+
   componentWillMount() {
     this.createBanner(this.props);
   }
@@ -33,11 +44,7 @@ export default class AlertBar extends React.Component {
 
   renderBanner = () => {
     if (this.state.banner) {
-      return (
-        <Banner>
-          {this.state.banner.challenge}
-        </Banner>
-      );
+      return <Banner>{this.state.banner.challenge}</Banner>;
     } else {
       return null;
     }
@@ -51,14 +58,11 @@ export default class AlertBar extends React.Component {
       let challenge = "Now";
       if (!props.challenge.now) challenge = "Never";
       let lastMoverIndex = props.getPlayerIndex(props.challenge.last_mover_uid);
-      let thirdPlayer = props.getPlayerIndex(
-        props.challenge.optional_solver_uid
-      );
+      let thirdPlayer = props.getPlayerIndex(props.challenge.optional_solver_uid);
       let thirdPlayerAction = "decided to solved";
       let challengeSummary, thirdPartySummary;
       if (props.challenge.isForceout) {
-        challengeSummary =
-          "Game resulted in a last cube Forceout. All players are scored equally.";
+        challengeSummary = "Game resulted in a last cube Forceout. All players are scored equally.";
         thirdPartySummary = "";
       } else {
         challengeSummary = `Player ${challengerIndex +

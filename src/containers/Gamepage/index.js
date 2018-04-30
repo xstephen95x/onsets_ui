@@ -16,7 +16,6 @@ import ScratchPad from "components/ScratchPad";
 import Variations from "components/Variations";
 import UniverseSetup from "components/Universe/UniverseSetup";
 import GoalArea from "components/GoalArea";
-import SolutionView from "components/SolutionView";
 import Button from "muicss/lib/react/button";
 import UniverseGrid from "components/Universe/UniverseGrid";
 import AlertBar from "components/AlertBar";
@@ -40,7 +39,7 @@ export default class Gamepage extends React.Component<Props, State> {
     stage: "new",
     stall: { began: 0 },
     turn: 0,
-    variations: undefined
+    variations: []
   };
 
   componentWillMount() {
@@ -167,7 +166,6 @@ export default class Gamepage extends React.Component<Props, State> {
 
   setVariation = (variation: string): void => {
     let variations = this.state.variations;
-    if (!this.state.variations || !variations) return;
     if (!this.state.variations[0]) {
       variations[0] = variation;
     } else if (this.state.variations[1] == null) {

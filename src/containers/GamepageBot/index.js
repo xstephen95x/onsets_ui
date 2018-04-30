@@ -1,13 +1,17 @@
+// @flow
+
 /**
  * Gamepage Bot
  * Bot games are only 2 player: 1 user and 1 bot
  * All state changes to the game should be methods in this file, which can be passed to children.
  * Lifecycle methods at the top, then render logic , then general methods.
+ * this.state.game is an object of type GameState which is assumed to be synced
+ * in realtime with the firebase database.
  * FIXME: fix render/setState anti-patterns.
  * FIXME: Handle a forceout (moving last cube onto the board)
  */
 import React from "react";
-import PropTypes from "prop-types";
+import type { Node } from "react";
 import styled from "styled-components";
 import firebase from "firebase";
 
@@ -28,49 +32,33 @@ import { rollCubes, shuffleCards } from "shared/game_setup_service";
 import Invalid from "containers/NotFound/Invalid";
 import Button from "muicss/lib/react/button";
 
+import type { RouterHistory, Location, Match } from "react-router-dom";
+type Props = { match: Match, location: Location, history: RouterHistory };
+
 const v4 = new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i);
 const PlayerCount = 2;
+const AlertTimeout = 5000; //ms
 
-export default class GamepageBot extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      botId: null,
-      auth: null,
-      movingCube: null,
-      alert: null,
-      game: {
-        stage: "universe", // new, universe, goal, ingame, challenge, archived
-        stall: {
-          staller: 0,
-          began: 0
-        },
-        turn: 0,
-        players: {
-          0: {
-            uid: null,
-            name: null
-          },
-          1: null
-        },
-        playerCount: 0,
-        permitted: [],
-        required: [],
-        forbidden: [],
-        cards: [],
-        universe: 0,
-        cubes: {
-          colors: [],
-          operators: [],
-          universe: [],
-          numbers: []
-        }
-      }
-    };
-  }
+type State = {
+  botId: ?string,
+  auth: ?boolean,
+  movingCube: ?Cube,
+  alert: ?string,
+  game: ?GameState
+};
+
+export default class GamepageBot extends React.Component<Props, State> {
+  state = {
+    alert: undefined,
+    auth: undefined,
+    botId: undefined,
+    game: undefined,
+    movingCube: undefined
+  };
 
   componentWillMount() {
-    const botId = this.props.match.params.botId;
+    const botId = String(this.props.match.params.botId);
+    if (!botId) return;
     firebase
       .database()
       .ref(`bots/${botId}`)
@@ -116,24 +104,25 @@ export default class GamepageBot extends React.Component {
   }
 
   // ----- Render Control ------
-  renderGameBoard = () => {
+  renderGameBoard = (): Node => {
     let boardClass = "";
     if (this.state.alert) boardClass = "alert";
-    if (this.state.game.challenge) boardClass = "alert";
+    if (this.state.game && this.state.game.challenge) boardClass = "alert";
+    if (!this.state.game) return null;
     return (
       <GamePrimitive>
         <NavBar
           mode="online-game"
           history={this.props.history}
           getPlayerIndex={this.getPlayerIndex}
-          stall={this.state.game.stall}
+          stall={this.state.game && this.state.game.stall}
           resetStall={this.resetStall}
           setStall={this.setStall}
-          turn={this.state.game.turn}
+          turn={this.state.game && this.state.game.turn}
         />
         <AlertBar
           alert={this.state.alert}
-          challenge={this.state.game.challenge}
+          challenge={this.state.game && this.state.game.challenge}
           getPlayerIndex={this.getPlayerIndex}
           players={this.state.game.players}
           solutions={this.state.game.solutions}
@@ -141,39 +130,42 @@ export default class GamepageBot extends React.Component {
         {this.renderChallengeButtons()}
         <BoardPrimitive className={boardClass}>
           <ResourcesWrapper>
-            {Resources({
-              isDisabled: this.state.game.challenge ? true : false,
-              setMovingCube: this.setMovingCube,
-              movingCube: this.state.movingCube,
-              turn: this.state.game.turn,
-              cubes: this.state.game.cubes
-            })}
+            {this.state.game &&
+              Resources({
+                isDisabled: this.state.game.challenge ? true : false,
+                setMovingCube: this.setMovingCube,
+                movingCube: this.state.movingCube,
+                turn: this.state.game.turn,
+                cubes: this.state.game.cubes
+              })}
             {this.renderGoalArea()}
           </ResourcesWrapper>
           {this.renderSolutions()}
-          <ScratchPad
-            getPlayerIndex={this.getPlayerIndex}
-            mode="online-game"
-            submitSolution={this.submitSolution}
-            challenge={this.state.game.challenge}
-            solutions={this.state.game.solutions}
-          />
+          {this.state.game && (
+            <ScratchPad
+              getPlayerIndex={this.getPlayerIndex}
+              mode="online-game"
+              submitSolution={this.submitSolution}
+              challenge={this.state.game.challenge}
+              solutions={this.state.game.solutions}
+            />
+          )}
           {this.renderBoard()}
           {this.renderUniverse()}
         </BoardPrimitive>
       </GamePrimitive>
     );
   };
-  renderChallengeButtons = () => {
+
+  renderChallengeButtons = (): Node => {
     //TODO: don't display if last mover
     //TODO: add Forceout Button
+    if (!this.state.game) return;
+    let lastMover = this.state.game.turn % PlayerCount - 1;
     let myIndex = this.getPlayerIndex(firebase.auth().currentUser.uid);
-    let lastMover = this.state.game.currentPlayer - 1;
-    if (lastMover === -1) lastMover = 2;
-    if (lastMover === myIndex) {
-      return null;
-    }
-    if (this.state.game.stage === "ingame") {
+    if (lastMover === -1) lastMover = PlayerCount - 1;
+    if (lastMover === myIndex) return;
+    if (this.state.game && this.state.game.stage === "ingame") {
       return (
         <ButtonsWrapper>
           <Button
@@ -203,8 +195,9 @@ export default class GamepageBot extends React.Component {
         </ButtonsWrapper>
       );
     } else if (
+      this.state.game &&
       this.state.game.challenge &&
-      this.state.game.challenge.isForceout &&
+      this.state.game.challenge.forceout &&
       this.state.game.stage !== "reveal"
     ) {
       return (
@@ -225,20 +218,18 @@ export default class GamepageBot extends React.Component {
       return null;
     }
   };
+
   renderSolutions = () => {
+    if (!this.state.game) return;
     if (["reveal", "archived"].includes(this.state.game.stage)) {
       return (
         <SolutionView
           online={true}
-          stage={this.state.game.stage}
-          concedeSolution={this.concedeSolution}
-          archiveGame={this.archiveGame}
-          reviewSolution={this.reviewSolution}
+          stage={this.state.game && this.state.game.stage}
           getPlayerIndex={this.getPlayerIndex}
-          solutions={this.state.game.solutions}
-          players={this.state.game.players}
-          challenge={this.state.game.challenge}
-          scores={this.state.game.scores}
+          solutions={this.state.game && this.state.game.solutions}
+          players={this.state.game && this.state.game.players}
+          challenge={this.state.game && this.state.game.challenge}
         />
       );
     } else {
@@ -246,24 +237,27 @@ export default class GamepageBot extends React.Component {
     }
   };
   renderGoalArea = () => {
+    if (!this.state.game) return;
     if (["goal", "ingame", "challenge", "archived"].includes(this.state.game.stage)) {
       return (
         <GoalArea
           markUsed={this.markUsed}
           setMovingCube={this.setMovingCube}
-          goalsetterUID={this.state.game.players[0].uid}
+          goalsetterUID={this.state.game && this.state.game.players[0].uid}
           isOnline={true}
           movingCube={this.state.movingCube}
           setGoal={this.setGoal}
-          cubes={this.state.game.cubes}
-          goal={this.state.game.goal}
+          cubes={this.state.game && this.state.game.cubes}
+          goal={this.state.game && this.state.game.goal}
         />
       );
     } else {
       return null;
     }
   };
-  renderBoard = () => {
+
+  renderBoard = (): Node => {
+    if (!this.state.game) return;
     if (["ingame", "challenge", "archived"].includes(this.state.game.stage)) {
       return (
         <Board
@@ -274,19 +268,20 @@ export default class GamepageBot extends React.Component {
       );
     }
   };
-  renderUniverse = () => {
-    if (this.state.game.stage === "universe") {
-      if (this.state.game.players[1] === firebase.auth().currentUser.uid) {
-        // if client is the 2nd player
-        return <UniverseSetup setUniverse={this.setUniverse} />;
-      } else {
-        return null;
-      }
-    } else if (["goal", "ingame", "challenge", "archived"].includes(this.state.game.stage)) {
+
+  renderUniverse = (): Node => {
+    if (this.state.game && this.state.game.stage === "universe") {
+      let isSecondPlayer = this.state.game.players[1] === firebase.auth().currentUser.uid;
+      if (isSecondPlayer) return <UniverseSetup setUniverse={this.setUniverse} />;
+      else return null;
+    } else if (
+      this.state.game &&
+      ["goal", "ingame", "challenge", "archived"].includes(this.state.game.stage)
+    ) {
       return (
         <div>
           {Universe({ cards: this.state.game.cards })}
-          <UniverseGrid cards={this.state.game.cards} />
+          <UniverseGrid cards={this.state.game && this.state.game.cards} />
         </div>
       );
     }
@@ -294,9 +289,9 @@ export default class GamepageBot extends React.Component {
 
   // --------- Methods -------------
 
-  createBotGame = botId => {
+  createBotGame = (botId: string): Promise<void> => {
     const path = `bots/${botId}`;
-    firebase
+    return firebase
       .database()
       .ref(path)
       .set({ stage: "new" })
@@ -308,48 +303,42 @@ export default class GamepageBot extends React.Component {
       });
   };
 
-  markUsed = cube => {
+  markUsed = (cube: Cube) => {
+    if (!this.state.game || !this.state.game.cubes) return;
     let numbers = this.state.game.cubes.numbers;
+    numbers.filter;
     for (var i = 0; i < numbers.length; i++) {
       if (numbers[i].index === cube.index) {
         numbers[i].wasUsed = true;
+        break;
       }
     }
     let game = this.state.game;
+    if (!game.cubes) throw new Error("Internal Rep Error: Must have cubes");
     game.cubes.numbers = numbers;
     this.setState({ game });
   };
 
-  archiveGame = scores => {
-    this.updateGame("stage", "archived");
-    this.updateGame("scores", scores);
-    this.updateGame("archived", true);
-  };
-
-  submitSolution = submission => {
+  submitSolution = (submission: SolutionSubmission): void => {
     //Assume that only appropriate players can call this function once
     const myUID = firebase.auth().currentUser.uid;
     this.updateGame(`solutions/${myUID}`, submission);
   };
 
-  getPlayerIndex = query => {
-    //TODO: Updat with bot_first
-    if (this.state.game.players) {
-      for (var i = 0; i < this.state.game.players.length; i++) {
-        let uid = this.state.game.players[i].uid;
-        if (uid === query) {
-          return i;
-        }
+  getPlayerIndex = (query: string): number => {
+    if (this.state.game && this.state.game.players) {
+      for (let i = 0; i < PlayerCount; i++) {
+        if (this.state.game.players[i].uid === query) return i;
       }
     }
-    return false;
+    throw new Error("Internal Rep Error: Player not found.");
   };
 
-  setChallenge = type => {
+  setChallenge = (type: "now" | "never" | "forceout"): void => {
     // in a 2-player game, one player is current (mover) IFF the other player
     // is the last mover. Only the current player is allowed to call a
     // challenge, since challenges must be called on last movers
-
+    if (!this.state.game) return;
     let callerIndex = this.state.game.turn % PlayerCount;
     let botIsLastMover =
       (this.state.game.bot_first && callerIndex === 1) ||
@@ -367,35 +356,39 @@ export default class GamepageBot extends React.Component {
     }
   };
 
-  setGoal = (goal, value) => {
-    if (this.state.game.players[0].uid === firebase.auth().currentUser.uid) {
-      this.updateGame("goal", goal).then(() => {
-        this.updateGame("stage", "ingame");
-        this.endTurn();
-      });
-      this.updateGame("goal_value", value);
-    } else {
-      this.setAlert("Only Player 1 can set the goal.");
+  setGoal = (goal: Goal, value: number): void => {
+    if (this.state.game && this.state.game.players[0]) {
+      if (this.state.game.players[0].uid === "foo") {
+        this.updateGame("goal", goal).then(() => {
+          this.updateGame("stage", "ingame");
+          this.endTurn();
+        });
+        this.updateGame("goal_value", value);
+      } else {
+        this.setAlert("Only Player 1 can set the goal.");
+      }
     }
   };
 
-  setUniverse = size => {
+  setUniverse = (size: number): void => {
     this.updateGame("universe", size);
     this.updateGame("cards", shuffleCards(size));
     this.updateGame("stage", "goal");
   };
 
-  detachGameListener = () => {
+  detachGameListener = (): void => {
     firebase
       .database()
       .ref()
       .off();
   };
 
-  attachGameListener = () => {
+  attachGameListener = (): void => {
+    if (!this.props.match.params.botId) return;
+    let gamePath = `bots/${this.props.match.params.botId}`;
     firebase
       .database()
-      .ref(`bots/${this.props.match.params.botId}`)
+      .ref(gamePath)
       .on("value", snapshot => {
         let value = snapshot.val();
         if (value) {
@@ -410,74 +403,64 @@ export default class GamepageBot extends React.Component {
       });
   };
 
-  attachAuthListener = () => {
+  attachAuthListener = (): void => {
     firebase.auth().onAuthStateChanged(user => {
       this.setState({ auth: Boolean(user) });
     });
   };
 
-  resetStall = () => {
+  resetStall = (): void => {
     this.updateGame("stall/began", 0);
   };
 
-  setStall = () => {
-    if (this.state.game.stall.began === 0) {
-      const timestamp = new Date().getTime();
-      this.updateGame("stall/began", timestamp);
-      let stalled_i = this.getPlayerIndex(firebase.auth().currentUser.uid) - 1;
-      if (stalled_i === -1) stalled_i = 2; //modulo wrap
-      this.updateGame("stall/stalled_index", stalled_i);
-    }
+  setStall = (): void => {
+    if (!this.state.game || !this.state.game.stall || this.state.game.stall.began !== 0) return;
+    let current_index = this.getPlayerIndex(firebase.auth().currentUser.uid);
+    let stalled_index = current_index - 1;
+    if (stalled_index === -1) stalled_index = PlayerCount - 1; //modulo wrap
+    this.updateGame("stall", {
+      began: new Date().getTime(),
+      stalled_index
+    });
   };
 
-  setAlert = alert => {
+  setAlert = (alert: string): void => {
     this.setState({ alert: alert });
     setTimeout(() => {
       this.setState({ alert: null });
-    }, 5000);
+    }, AlertTimeout);
   };
 
-  setUpGame = () => {
-    let gamePlayers = {};
-    let a, b;
+  setUpGame = (): TransactionReceipt => {
+    let players = {};
     // ~ 50/50 chance of who goes first
+    let a, b;
+    if (Math.round(Math.random())) (a = 1), (b = 0);
+    else (a = 0), (b = 1);
+    let bot_first = b ? false : true;
 
-    //TODO: set a random state variable
-    if (Math.round(Math.random)) {
-      a = 1;
-      b = 0;
-    } else {
-      a = 0;
-      b = 1;
-    }
-    gamePlayers[a] = {
+    players[a] = {
       name: firebase.auth().currentUser.displayName,
       uid: firebase.auth().currentUser.uid
     };
-    gamePlayers[b] = {
-      name: "SuperBot",
+    players[b] = {
+      name: "The Thinker",
       uid: this.props.match.params.botId
     };
 
-    // if b == 1 => bot is player 2
-    let bot_first = b ? false : true;
     return firebase
       .database()
-      .ref(`bots/${this.props.match.params.botId}`)
+      .ref(`bots/${String(this.props.match.params.botId)}`)
       .transaction(data => {
         let blankGame = {
           turn: 0,
-          stall: {
-            began: 0
-          },
-          players: gamePlayers,
+          stall: { began: 0 },
+          players: players,
           bot_first: bot_first,
           uuid: this.props.match.params.botId,
           playerCount: 2,
           movingCube: 0,
           stage: "universe",
-          cards: [],
-          universe: 0,
           cubes: rollCubes()
         };
         return blankGame;
@@ -485,38 +468,34 @@ export default class GamepageBot extends React.Component {
   };
 
   endTurn = () => {
-    console.log("=> TURN:", this.state.game.turn, this.state.game.turn + 1);
+    if (!this.state.game) return;
     this.updateGame("turn", this.state.game.turn + 1);
   };
 
-  setMovingCube = cube => {
+  setMovingCube = (cube: ?Cube) => {
     this.setState({ movingCube: cube });
   };
 
-  updateGame = (path, value) => {
-    return new Promise((resolve, reject) => {
-      firebase
-        .database()
-        .ref(`bots/${this.state.botId}/${path}`)
-        .transaction(
-          data => {
-            return value;
-          },
-          () => {
-            resolve(true);
-          }
-        );
-    });
+  updateGame = (relPath: string, value: any): TransactionReceipt => {
+    if (!this.state.botId) throw new Error("Internal Rep Error");
+    let fullPath = `bots/${this.state.botId}/${relPath}`;
+    return firebase
+      .database()
+      .ref(fullPath)
+      .transaction(data => {
+        return value;
+      });
   };
 
-  moveCubeTo = area => {
-    //area = 'permitted' | 'forbidden' | 'required'.
+  moveCubeTo = (area: "permitted" | "forbidden" | "required"): void => {
+    if (!this.state.game) return;
     const movingCube = this.state.movingCube;
     let currentPlayerIndex = this.state.game.turn % 2;
     let currentPlayerUID = this.state.game.players[currentPlayerIndex].uid;
 
     if (movingCube) {
       if (currentPlayerUID === firebase.auth().currentUser.uid) {
+        if (!this.state.game || !this.state.game.cubes) return;
         const res = this.state.game.cubes; //resources
         const all = [].concat(res.operators, res.colors, res.universe);
 
@@ -536,30 +515,33 @@ export default class GamepageBot extends React.Component {
           }
         }
 
-        //TODO: Make this.path
         firebase
           .database()
-          .ref(`bots/${this.state.botId}/${area}`)
+          .ref(`bots/${String(this.state.botId)}/${area}`)
           .transaction(data => {
-            if (this.state.game[area]) {
+            if (this.state.game && this.state.game[area]) {
               return this.state.game[area].concat([movingCube]);
             } else {
               return [movingCube];
             }
           });
-        this.removeFromResources(movingCube);
+        this.removeFromResources(movingCube).then(() => {
+          this.endTurn();
+        });
+        this.setMovingCube();
         this.recordMove(movingCube, area);
-        this.setMovingCube(null);
       } else {
         this.setAlert("It is not your turn to move.");
       }
     }
   };
 
-  recordMove(cube, area) {
-    firebase
+  recordMove(cube: Cube, area: "permitted" | "forbidden" | "required"): TransactionReceipt {
+    let uuid = this.state.game && this.state.game.uuid;
+    if (!uuid) throw new Error("Internal Rep Error:");
+    return firebase
       .database()
-      .ref(`bots/${this.state.game.uuid}/log`)
+      .ref(`bots/${uuid}/log`)
       .transaction(data => {
         if (!data) data = [];
         data.push({
@@ -570,15 +552,14 @@ export default class GamepageBot extends React.Component {
       });
   }
 
-  removeFromResources = cube => {
+  removeFromResources = (cube: Cube): TransactionReceipt => {
+    if (!this.state.game || !this.state.game.cubes) throw new Error("Internal Rep Error");
     let cubes = this.state.game.cubes;
     let newResources = this.state.game.cubes[cube.type].filter(resource => {
       return resource.index !== cube.index;
     });
-    cubes[cube.type] = newResources;
-    this.updateGame("cubes", cubes).then(() => {
-      this.endTurn();
-    });
+    cubes[cube.type] = (newResources: any);
+    return this.updateGame("cubes", cubes);
   };
 }
 
