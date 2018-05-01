@@ -14,12 +14,16 @@ type GameState = {
   permitted?: Array<Cube>,
   players: Array<Player>,
   required?: Array<Cube>,
+  scores?: Scores,
   solutions?: SolutionStrings,
   stage: Stage,
   stall: ?Stall,
   turn: number,
   universe?: number,
   uuid: string
+};
+type Scores = {
+  [uid: string]: number
 };
 
 type GameStateOffline = {

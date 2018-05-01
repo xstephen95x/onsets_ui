@@ -153,6 +153,7 @@ export default class Home extends React.Component<Props, State> {
           if (!node) return 0;
           console.log(node);
           node.archived = true;
+          node.stage = "archived";
           return node;
         },
         () => {},

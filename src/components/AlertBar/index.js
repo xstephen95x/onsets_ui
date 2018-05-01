@@ -8,15 +8,15 @@ import firebase from "firebase";
 type Props = {
   alert: ?string,
   challenge?: Challenge,
-  players?: Array<Player>
+  players?: Array<Player>,
+  getPlayerIndex: string => number
 };
+
 type State = {
   message: string,
-  banner: ?{
-    challengeSummary: string,
-    thirdPlayer: string
-  }
+  banner: ?string
 };
+
 export default class AlertBar extends React.Component<Props, State> {
   state = {
     message: "",
@@ -44,37 +44,32 @@ export default class AlertBar extends React.Component<Props, State> {
 
   renderBanner = () => {
     if (this.state.banner) {
-      return <Banner>{this.state.banner.challenge}</Banner>;
+      return <Banner>{this.state.banner}</Banner>;
     } else {
       return null;
     }
   };
-  createBanner = props => {
-    if (props.challenge) {
+
+  createBanner = (props: Props): void => {
+    if (props.challenge && props.players) {
       let player1 = props.players[0].uid;
       let player2 = props.players[1].uid;
-      // let player3 = props.players[2].uid;
-      let challengerIndex = props.getPlayerIndex(props.challenge.caller_uid);
+
       let challenge = "Now";
       if (!props.challenge.now) challenge = "Never";
-      let lastMoverIndex = props.getPlayerIndex(props.challenge.last_mover_uid);
-      let thirdPlayer = props.getPlayerIndex(props.challenge.optional_solver_uid);
-      let thirdPlayerAction = "decided to solved";
-      let challengeSummary, thirdPartySummary;
-      if (props.challenge.isForceout) {
-        challengeSummary = "Game resulted in a last cube Forceout. All players are scored equally.";
-        thirdPartySummary = "";
+
+      let banner;
+      if (props.challenge.forceout) {
+        banner = "Game resulted in a last cube Forceout. All players are scored equally.";
       } else {
-        challengeSummary = `Player ${challengerIndex +
-          1} called challenge ${challenge} on Player ${lastMoverIndex + 1}.`;
-        thirdPartySummary = `Player ${thirdPlayer + 1} ${thirdPlayerAction}.`;
+        let challengerIndex = props.getPlayerIndex(props.challenge.caller_uid);
+        //NOTE: 2-player depenedent
+        let otherIndex = 1;
+        if (challengerIndex === 1) otherIndex = 0;
+        banner = `Player ${challengerIndex +
+          1} called challenge ${challenge} on Player ${otherIndex + 1}.`;
       }
-      this.setState({
-        banner: {
-          challenge: challengeSummary,
-          thirdPlayer: thirdPartySummary
-        }
-      });
+      this.setState({ banner });
     }
   };
 }

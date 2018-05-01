@@ -85,7 +85,7 @@ export default class ScratchPad extends React.Component {
       if (this.props.solutions) {
         isDisabled = this.props.solutions.hasOwnProperty(myUID);
       }
-      if (this.props.challenge.isForceout) {
+      if (this.props.challenge.forceout) {
         if (this.props.getPlayerIndex(myUID)) {
           // if forceout, render 1 button to all 3 players
           return (
@@ -123,7 +123,7 @@ export default class ScratchPad extends React.Component {
         } else {
           return null;
         }
-      } else if (this.props.challenge.last_mover_uid === myUID) {
+      } else {
         if (this.props.challenge.now) {
           return null;
         } else {
@@ -142,31 +142,6 @@ export default class ScratchPad extends React.Component {
             </ButtonWrapper>
           );
         }
-      } else if (this.props.challenge.optional_solver_uid === myUID) {
-        return (
-          <ButtonWrapper>
-            <Button
-              disabled={isDisabled}
-              style={{
-                backgroundColor: Colors.fgYel,
-                fontWeight: "700",
-                letterSpacing: "2px"
-              }}
-              onClick={this.handleSubmit}>
-              Submit
-            </Button>
-            <Button
-              disabled={isDisabled}
-              style={{
-                backgroundColor: Colors.fgRed,
-                fontWeight: "700",
-                letterSpacing: "2px"
-              }}
-              onClick={this.handleDecline}>
-              Decline
-            </Button>
-          </ButtonWrapper>
-        );
       }
     }
   };

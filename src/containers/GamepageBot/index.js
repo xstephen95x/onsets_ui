@@ -9,6 +9,7 @@
  * in realtime with the firebase database.
  * FIXME: fix render/setState anti-patterns.
  * FIXME: Handle a forceout (moving last cube onto the board)
+ * TODO: on challenge never, let the player submit an answer
  */
 import React from "react";
 import type { Node } from "react";
@@ -219,22 +220,23 @@ export default class GamepageBot extends React.Component<Props, State> {
     }
   };
 
-  renderSolutions = () => {
-    if (!this.state.game) return;
-    if (["reveal", "archived"].includes(this.state.game.stage)) {
-      return (
-        <SolutionView
-          online={true}
-          stage={this.state.game && this.state.game.stage}
-          getPlayerIndex={this.getPlayerIndex}
-          solutions={this.state.game && this.state.game.solutions}
-          players={this.state.game && this.state.game.players}
-          challenge={this.state.game && this.state.game.challenge}
-        />
-      );
-    } else {
-      return null;
-    }
+  renderSolutions = (): Node => {
+    if (!this.state.game) return null;
+    if (!["reveal", "archived"].includes(this.state.game.stage)) return null;
+    if (!this.state.game || !this.state.game.solutions || !this.state.game.challenge) return null;
+
+    //NOTE: will not render solutions without scores
+    return (
+      <SolutionView
+        online={true}
+        stage={this.state.game.stage}
+        solutions={this.state.game.solutions}
+        getPlayerIndex={this.getPlayerIndex}
+        players={this.state.game.players}
+        challenge={this.state.game.challenge}
+        scores={this.state.game.scores}
+      />
+    );
   };
   renderGoalArea = () => {
     if (!this.state.game) return;
@@ -357,8 +359,9 @@ export default class GamepageBot extends React.Component<Props, State> {
   };
 
   setGoal = (goal: Goal, value: number): void => {
+    let playerOne = firebase.auth().currentUser.uid;
     if (this.state.game && this.state.game.players[0]) {
-      if (this.state.game.players[0].uid === "foo") {
+      if (this.state.game.players[0].uid === playerOne) {
         this.updateGame("goal", goal).then(() => {
           this.updateGame("stage", "ingame");
           this.endTurn();
