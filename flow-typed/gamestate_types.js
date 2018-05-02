@@ -91,11 +91,13 @@ type NumberCube = {
 // ------- Cube Data Structures ---------------
 
 type Resources = {
-  colors: Array<ColorCube>,
+  colors: ColorCubes,
   numbers: NumberCubes,
   operators: OperatorCubes,
   universe: UniverseCubes
 };
+
+type ColorCubes = Array<ColorCube>;
 
 type Goal = [
   0 | NumberCube,

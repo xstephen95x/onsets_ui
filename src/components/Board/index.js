@@ -26,12 +26,16 @@ export default ({
 }): Node => {
   return (
     <PlayingMat>
-      {["forbidden", "permitted", "required"].map((name, i) => {
+      {["forbidden", "permitted", "required"].map((area, i) => {
+        let cubes = game[area];
+        if (!cubes) cubes = [];
         return (
           <BoardSquare
-            key={`board-square-${i}`}
-            type={name}
-            cubes={game[name]}
+            connectDropTarget={() => {}}
+            isOver={false}
+            key={`board-square-${area}`}
+            area={area}
+            cubes={cubes}
             moveCubeTo={moveCubeTo}
             movingCube={movingCube}
           />

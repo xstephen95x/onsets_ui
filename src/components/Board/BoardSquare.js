@@ -1,20 +1,27 @@
+// @flow
+
 import React from "react";
 import PropTypes from "prop-types";
 import Cube from "../Cube";
 import styled from "styled-components";
 import { Colors } from "containers/App/global_styles";
 import { DropTarget } from "react-dnd";
+import type { ConnectDropTarget } from "react-dnd";
 
-class BoardSquare extends React.Component {
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.movingCube !== this.props.movingCube ||
-      (this.props.cubes && nextProps.cubes.length !== this.props.cubes.length) ||
-      nextProps.isOver !== this.props.isOver
-    );
-  }
+type Area = "permitted" | "forbidden" | "required";
+
+type Props = {
+  connectDropTarget: ConnectDropTarget,
+  isOver: boolean,
+  moveCubeTo: Area => {},
+  movingCube: Cube,
+  cubes: Array<Cube>,
+  area: Area
+};
+
+class BoardSquare extends React.Component<Props> {
   render() {
-    const { connectDropTarget, isOver, moveCubeTo, movingCube, cubes, type } = this.props;
+    const { connectDropTarget, isOver, moveCubeTo, movingCube, cubes, area } = this.props;
     let renderCubes = cubes;
     if (!cubes) {
       renderCubes = [];
@@ -27,15 +34,15 @@ class BoardSquare extends React.Component {
       <div style={{ display: "inline-block" }}>
         <Wrapper
           onTouchStart={() => {
-            this.props.moveCubeTo(this.props.type);
+            this.props.moveCubeTo(this.props.area);
           }}
           className={className}>
-          <Title>{type}</Title>
+          <Title>{area}</Title>
           <CubeContainer>
             {renderCubes.map((value, i) => {
               return (
                 <Cube
-                  key={`${type}-cube-${i}`}
+                  key={`${area}-cube-${i}`}
                   cube={value}
                   goalPosition={""}
                   isDisabled={true}
@@ -52,7 +59,7 @@ class BoardSquare extends React.Component {
 
 const target = {
   drop(props, monitor, component) {
-    props.moveCubeTo(props.type);
+    props.moveCubeTo(props.area);
   }
 };
 function collect(connect, monitor) {
