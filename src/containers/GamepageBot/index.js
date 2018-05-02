@@ -10,6 +10,8 @@
  * FIXME: fix render/setState anti-patterns.
  * FIXME: Handle a forceout (moving last cube onto the board)
  * TODO: on challenge never, let the player submit an answer
+ *
+ * Written by Stephen L. White
  */
 import React from "react";
 import type { Node } from "react";
@@ -69,8 +71,8 @@ export default class GamepageBot extends React.Component<Props, State> {
         } else {
           this.attachAuthListener();
         }
+        this.setState({ botId });
         if (snapshot.exists()) {
-          this.setState({ botId });
           this.attachGameListener();
         } else {
           let isValidBotId = v4.test(botId);
@@ -273,7 +275,7 @@ export default class GamepageBot extends React.Component<Props, State> {
 
   renderUniverse = (): Node => {
     if (this.state.game && this.state.game.stage === "universe") {
-      let isSecondPlayer = this.state.game.players[1] === firebase.auth().currentUser.uid;
+      let isSecondPlayer = this.state.game.players[1].uid === firebase.auth().currentUser.uid;
       if (isSecondPlayer) return <UniverseSetup setUniverse={this.setUniverse} />;
       else return null;
     } else if (

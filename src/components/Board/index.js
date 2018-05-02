@@ -1,17 +1,31 @@
+// @flow
+
 /**
  * Board
- * the forbidden, permitted, required  playing mat.
+ * Has 3 'areas'
+ * They are rendered in the order:
+ * [Forbiden] [Permitted] [Required]
+ *
  */
 import React from "react";
-import PropTypes from "prop-types";
+import type { Node } from "react";
 import styled from "styled-components";
-import firebase from "firebase";
 
 import BoardSquare from "./BoardSquare";
 
-export default ({ game, moveCubeTo, movingCube }) => {
+type Area = "permitted" | "forbidden" | "required";
+
+export default ({
+  game,
+  moveCubeTo,
+  movingCube
+}: {
+  game: GameState,
+  moveCubeTo: Area => {},
+  movingCube: Cube
+}): Node => {
   return (
-    <InPlayPrimitive>
+    <PlayingMat>
       {["forbidden", "permitted", "required"].map((name, i) => {
         return (
           <BoardSquare
@@ -23,11 +37,11 @@ export default ({ game, moveCubeTo, movingCube }) => {
           />
         );
       })}
-    </InPlayPrimitive>
+    </PlayingMat>
   );
 };
 
-const InPlayPrimitive = styled.div`
+const PlayingMat = styled.div`
   font-size: 40px;
   width: 750px;
   height: 380px;

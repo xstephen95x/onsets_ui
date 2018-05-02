@@ -9,20 +9,12 @@ class BoardSquare extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       nextProps.movingCube !== this.props.movingCube ||
-      (this.props.cubes &&
-        nextProps.cubes.length !== this.props.cubes.length) ||
+      (this.props.cubes && nextProps.cubes.length !== this.props.cubes.length) ||
       nextProps.isOver !== this.props.isOver
     );
   }
   render() {
-    const {
-      connectDropTarget,
-      isOver,
-      moveCubeTo,
-      movingCube,
-      cubes,
-      type
-    } = this.props;
+    const { connectDropTarget, isOver, moveCubeTo, movingCube, cubes, type } = this.props;
     let renderCubes = cubes;
     if (!cubes) {
       renderCubes = [];
@@ -37,11 +29,8 @@ class BoardSquare extends React.Component {
           onTouchStart={() => {
             this.props.moveCubeTo(this.props.type);
           }}
-          className={className}
-        >
-          <Title>
-            {type}
-          </Title>
+          className={className}>
+          <Title>{type}</Title>
           <CubeContainer>
             {renderCubes.map((value, i) => {
               return (
